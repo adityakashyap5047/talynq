@@ -1,4 +1,4 @@
-# 🚀 Talynq
+# <img src="public/talynq/talynq-icon.png" height="30"/> Talynq
 
 **Talynq** is a modern job creation and talent discovery platform that connects skilled individuals with the right opportunities — faster, smarter, and easier.
 
