@@ -4,13 +4,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { SignedIn, SignedOut, SignIn, SignUp, UserButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut, SignIn, SignUp, UserButton, useUser } from '@clerk/nextjs';
 import { BriefcaseBusiness, Heart, PenBox } from 'lucide-react';
 import { Button } from './ui/button';
 
 const Header = () => {
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
+  const { user } = useUser();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -69,12 +70,12 @@ const Header = () => {
           </SignedOut>
 
           <SignedIn>
-            <Link href="/post-job">
+            {user?.unsafeMetadata.role === 'recruiter' && <Link href="/post-job">
               <Button variant="destructive" className="rounded-full">
                 <PenBox size={20} className="mr-1" />
                 Post Job
               </Button>
-            </Link>
+            </Link>}
             <UserButton appearance={{
               elements: {
                 avatarBox: "w-10 h-10",
