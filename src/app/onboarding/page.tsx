@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React, { useLayoutEffect } from 'react';
 import { BarLoader } from "react-spinners";
 
 type RoleType = "candidate" | "recruiter";
@@ -13,15 +13,17 @@ const Onboarding = () => {
   const { user, isLoaded } = useUser();
   const router = useRouter();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (!isLoaded || !user) return;
+
     if (user?.unsafeMetadata?.role) {
       if (user?.unsafeMetadata.role === "recruiter") {
-        router.push("/post-job");
+        router.replace("/post-job");
       } else if (user?.unsafeMetadata?.role === "candidate") {
-        router.push("/jobs");
+        router.replace("/jobs");
       }
     }
-  }, [user, router])
+  }, [user, isLoaded, router])
 
   const handleRoleSelection: (role: RoleType) => void = async (role) => {
     const updateUser = await user?.update({
@@ -37,7 +39,7 @@ const Onboarding = () => {
     }
   };
 
-  if (!isLoaded) {
+  if (!isLoaded || user?.unsafeMetadata?.role) {
     return <BarLoader className="mb-4" width={"100%"} color="#36d7b7" />
   }
 

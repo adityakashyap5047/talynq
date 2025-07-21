@@ -84,7 +84,7 @@ const Header = () => {
     <>
       <nav className='p-4 flex justify-between items-center'>
         <Link href="/">
-          <Image src="/talynq/talynq-text.png" alt="Logo" width={100} height={100} />
+          <Image src="/talynq/talynq-text.png" className='h-10' alt="Logo" width={100} height={100} />
         </Link>
 
         <div className="flex gap-4 justify-center items-center">
