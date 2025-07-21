@@ -119,6 +119,12 @@
   }
 }
 
+@layer utilities {
+  .gradient-title{
+    @apply bg-gradient-to-br from-gray-500 via-gray-200 to-white text-transparent bg-clip-text;
+  }
+}
+
 .bg-grid{
   position: fixed;
   top: 0;
