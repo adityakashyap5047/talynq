@@ -1,6 +1,24 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
 
-export default clerkMiddleware();
+const isProtectedRoute = createRouteMatcher([
+  "/onboarding(.*)",
+  "/jobs(.*)",
+  "/post-job(.*)",
+  "/my-jobs(.*)",
+  "/saved-jobs(.*)",
+  "/job/:id(.*)",
+])
+
+export default clerkMiddleware(async (auth, req) => {
+  const {userId} = await auth();
+
+  if(!userId && isProtectedRoute(req)){
+    return NextResponse.redirect(new URL("/?sign-in=true", req.url));
+  }
+
+  // onboarding status -> i.e. user is recuriter or not
+});
 
 export const config = {
   matcher: [

@@ -107,7 +107,7 @@ const Header = () => {
           <SignIn
             routing="hash"
             signUpForceRedirectUrl="/onboarding"
-            fallbackRedirectUrl="/"
+            fallbackRedirectUrl="/onboarding"
           />
         </div>
       )}
@@ -121,7 +121,7 @@ const Header = () => {
           <SignUp
             routing="hash"
             signInForceRedirectUrl="/onboarding"
-            fallbackRedirectUrl="/"
+            fallbackRedirectUrl="/onboarding"
           />
         </div>
       )}
