@@ -7,12 +7,12 @@ import { useEffect, useState } from 'react';
 import { SignedIn, SignedOut, SignIn, SignUp, UserButton, useUser } from '@clerk/nextjs';
 import { BriefcaseBusiness, Heart, PenBox } from 'lucide-react';
 import { Button } from './ui/button';
-import AddUser from './AddUser';
+import axios from 'axios';
 
 const Header = () => {
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -35,6 +35,14 @@ const Header = () => {
       setShowSignUp(false);
     }
   }, [signInParam, signUpParam]);
+
+  useEffect(()=> {
+    const addUser = async () => {
+      const givenUser = await axios.post('/api/add-user');
+      console.log("User added to DB:", givenUser);
+    }
+    addUser();
+  }, [isSignedIn])
 
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -71,7 +79,6 @@ const Header = () => {
           </SignedOut>
 
           <SignedIn>
-            <AddUser />
             {user?.unsafeMetadata.role === 'recruiter' && <Link href="/post-job">
               <Button variant="destructive" className="rounded-full">
                 <PenBox size={20} className="mr-1" />
