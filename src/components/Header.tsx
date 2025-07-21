@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { SignedIn, SignedOut, SignIn, SignUp, UserButton, useUser } from '@clerk/nextjs';
 import { BriefcaseBusiness, Heart, PenBox } from 'lucide-react';
 import { Button } from './ui/button';
+import AddUser from './AddUser';
 
 const Header = () => {
   const [showSignIn, setShowSignIn] = useState(false);
@@ -70,6 +71,7 @@ const Header = () => {
           </SignedOut>
 
           <SignedIn>
+            <AddUser />
             {user?.unsafeMetadata.role === 'recruiter' && <Link href="/post-job">
               <Button variant="destructive" className="rounded-full">
                 <PenBox size={20} className="mr-1" />
