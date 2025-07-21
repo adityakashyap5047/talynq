@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from '@clerk/themes'
 
 export const metadata: Metadata = {
   title: "Talynq",
@@ -21,7 +22,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        baseTheme: dark,
+        variables: {
+          colorPrimary: "#2d3748",
+          colorBackground: "#111112",
+          colorInputBackground: "#2d3748",
+          colorInputText: "#e5e7eb",
+          colorText: "#f3f4f6",
+          colorTextSecondary: "#9ca3af",
+          colorDanger: "#ef4444",
+          colorSuccess: "#10b981"
+        }
+      }}
+    >
       <html lang="en" suppressHydrationWarning>
           <body>
             <div className="bg-grid" />

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { SignedIn, SignedOut, SignIn, SignUp, UserButton } from '@clerk/nextjs';
-import { PenBox } from 'lucide-react';
+import { BriefcaseBusiness, Heart, PenBox } from 'lucide-react';
 import { Button } from './ui/button';
 
 const Header = () => {
@@ -63,7 +63,7 @@ const Header = () => {
           <Image src="/talynq/talynq-text.png" alt="Logo" width={100} height={100} />
         </Link>
 
-        <div className="flex gap-8">
+        <div className="flex gap-4 justify-center items-center">
           <SignedOut>
             <Button variant="outline" onClick={openSignIn}>Login</Button>
           </SignedOut>
@@ -75,7 +75,25 @@ const Header = () => {
                 Post Job
               </Button>
             </Link>
-            <UserButton />
+            <UserButton appearance={{
+              elements: {
+                avatarBox: "w-10 h-10",
+              }
+            }}>
+              <UserButton.MenuItems>
+                <UserButton.Link
+                  label='My Jobs'
+                  labelIcon={<BriefcaseBusiness size={15} />}
+                  href="/my-jobs"
+                />
+                <UserButton.Link
+                  label='Saved Jobs'
+                  labelIcon={<Heart size={15} />}
+                  href="/saved-jobs"
+                />
+                <UserButton.Action label='manageAccount' />
+              </UserButton.MenuItems>
+            </UserButton>
           </SignedIn>
         </div>
       </nav>
