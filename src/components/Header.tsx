@@ -37,12 +37,26 @@ const Header = () => {
   }, [signInParam, signUpParam]);
 
   useEffect(()=> {
+    if (!isSignedIn) return;
     const addUser = async () => {
-      const givenUser = await axios.post('/api/add-user');
-      console.log("User added to DB:", givenUser);
+      await axios.post('/api/add-user');
     }
     addUser();
   }, [isSignedIn])
+
+  useEffect(() => {
+    const isModalOpen = showSignIn || showSignUp;
+
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showSignIn, showSignUp]);
 
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
