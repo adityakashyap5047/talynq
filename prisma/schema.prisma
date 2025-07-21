@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(cuid())
+  clerkUserId String @unique
+  email String @unique
+  name String?
+  imageUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  jobs Jobs[]
+  applications Application[]
+  savedJobs SavedJobs[]
+}
+
+model Company {
+  id String @id @default(cuid())
+  name String
+  logo_url String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  jobs Jobs[]
+}
+
+model Jobs {
+  id String @id @default(cuid())
+  recruiter User @relation(fields: [recruiter_id], references: [id])
+  recruiter_id String
+  title String
+  company Company @relation(fields: [company_id], references: [id],  onDelete: Cascade)
+  company_id String
+  description String
+  location String
+  requirements String
+  isOpen Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  applications Application[]
+  savedJobs SavedJobs[]
+}
+
+model Application {
+  id String @id @default(cuid())
+  job Jobs @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  job_id String
+  candidate User @relation(fields: [candidate_id], references: [id])
+  candidate_id String
+  status ApplicationStatus @default(APPLIED)
+  resumeUrl String
+  skills String
+  experience Int
+  education String
+  name String
+  email String
+  phone String
+}
+
+model SavedJobs {
+  id String @id @default(cuid())
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id String
+  job Jobs @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  job_id String
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @updatedAt
+  @@unique([user_id, job_id])
+}
+
+enum ApplicationStatus {
+  APPLIED
+  INTERVIEWING
+  HIRED
+  REJECTED
+}
