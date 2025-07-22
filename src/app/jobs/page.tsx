@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { State } from "country-state-city";
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 
 const JobListing = () => {
 
@@ -23,9 +25,13 @@ const JobListing = () => {
   const [location, setLocation] = useState<string>('');
   const [companyId, setCompanyId] = useState<string>('');
 
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const currentPage = parseInt(searchParams.get('page') || '1');
   const [totalJobs, setTotalJobs] = useState<number>(0);
-  const limit = 3;
+  const limit = 6;
+  const totalPages = Math.ceil(totalJobs / limit);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -85,8 +91,6 @@ const JobListing = () => {
     getCompanies();
   }, []);
 
-  const totalPages = Math.ceil(totalJobs / limit);
-
   if (!loading && error) {
     return <div className="text-red-500 bg-slate-800 p-4 rounded-sm">Error: {error}</div>;
   }
@@ -104,6 +108,12 @@ const JobListing = () => {
     setCompanyId('');
     setSearchQuery('');
   }
+
+  const goToPage = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', page.toString());
+    router.push(`?${params.toString()}`);
+  };
 
   return (
     <div>
@@ -160,36 +170,47 @@ const JobListing = () => {
 
       {loading ? <BarLoader className="mt-4" width={"100%"} color="#36d7b7" /> : (
         <>
-    {/* Job Cards Grid */}
-    <div className='mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 sm:px-0'>
-      {jobs?.length > 0 ? (
-        jobs.map((job) => <JobCard key={job.id} job={job} />)
-      ) : (
-        <div>No Jobs Found 😥</div>
-      )}
-    </div>
+          <div className='my-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 sm:px-0'>
+            {jobs?.length > 0 ? (
+              jobs.map((job) => <JobCard key={job.id} job={job} />)
+            ) : (
+              <div>No Jobs Found 😥</div>
+            )}
+          </div>
 
-    {/* Pagination */}
-    {totalPages > 1 && (
-      <div className="flex justify-center mt-6 gap-4">
-        <Button
-          variant="outline"
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage((prev) => prev - 1)}
-        >
-          Previous
-        </Button>
-        <span className="self-center">Page {currentPage} of {totalPages}</span>
-        <Button
-          variant="outline"
-          disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage((prev) => prev + 1)}
-        >
-          Next
-        </Button>
-      </div>
-    )}
-  </>
+          {totalPages > 1 && (
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={() => goToPage(Math.max(1, currentPage - 1))}
+                  />
+                </PaginationItem>
+
+                {Array.from({ length: totalPages }, (_, i) => {
+                  const pageNum = i + 1;
+                  return (
+                    <PaginationItem key={pageNum}>
+                      <PaginationLink
+                        isActive={currentPage === pageNum}
+                        onClick={() => goToPage(pageNum)}
+                      >
+                        {pageNum}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => goToPage(Math.min(totalPages, currentPage + 1))}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
+        </>
       )}
     </div>
   )
