@@ -8,7 +8,7 @@ import { SignedIn, SignedOut, SignIn, SignUp, UserButton, useUser } from '@clerk
 import { BriefcaseBusiness, Heart, PenBox } from 'lucide-react';
 import { Button } from './ui/button';
 import axios from 'axios';
-import { BarLoader, BeatLoader } from 'react-spinners';
+import { BeatLoader } from 'react-spinners';
 
 const Header = () => {
   const [showSignIn, setShowSignIn] = useState(false);
