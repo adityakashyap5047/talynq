@@ -62,7 +62,8 @@ export async function POST(request: NextRequest) {
         where: whereClause,
         include: {
             recruiter: true,
-            company: true
+            company: true,
+            savedJobs: true,
         },
         orderBy: {
             createdAt: "desc"
