@@ -8,11 +8,12 @@ import { SignedIn, SignedOut, SignIn, SignUp, UserButton, useUser } from '@clerk
 import { BriefcaseBusiness, Heart, PenBox } from 'lucide-react';
 import { Button } from './ui/button';
 import axios from 'axios';
+import { BarLoader, BeatLoader } from 'react-spinners';
 
 const Header = () => {
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
-  const { user, isSignedIn } = useUser();
+  const { user, isSignedIn, isLoaded } = useUser();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -87,42 +88,42 @@ const Header = () => {
           <Image src="/talynq/talynq-text.png" className='h-10' alt="Logo" width={100} height={100} />
         </Link>
 
-        <div className="flex gap-4 justify-center items-center">
-          <SignedOut>
-            <Button variant="outline" onClick={openSignIn}>Login</Button>
-          </SignedOut>
+        {!isLoaded ? <BeatLoader color="#36d7b7" /> : (
+          <div className="flex gap-4 justify-center items-center">
+            <SignedOut>
+              <Button variant="outline" onClick={openSignIn}>Login</Button>
+            </SignedOut>
 
-          <SignedIn>
-            {user?.unsafeMetadata.role === 'recruiter' && <Link href="/post-job">
-              <Button variant="destructive" className="rounded-full">
-                <PenBox size={20} className="mr-1" />
-                Post Job
-              </Button>
-            </Link>}
-            <UserButton appearance={{
-              elements: {
-                avatarBox: "w-10 h-10",
-              }
-            }}>
-              <UserButton.MenuItems>
-                <UserButton.Link
-                  label='My Jobs'
-                  labelIcon={<BriefcaseBusiness size={15} />}
-                  href="/my-jobs"
-                />
-                <UserButton.Link
-                  label='Saved Jobs'
-                  labelIcon={<Heart size={15} />}
-                  href="/saved-jobs"
-                />
-                <UserButton.Action label='manageAccount' />
-              </UserButton.MenuItems>
-            </UserButton>
-          </SignedIn>
-        </div>
+            <SignedIn>
+              {user?.unsafeMetadata.role === 'recruiter' && <Link href="/post-job">
+                <Button variant="destructive" className="rounded-full">
+                  <PenBox size={20} className="mr-1" />
+                  Post Job
+                </Button>
+              </Link>}
+              <UserButton appearance={{
+                elements: {
+                  avatarBox: "w-10 h-10",
+                }
+              }}>
+                <UserButton.MenuItems>
+                  <UserButton.Link
+                    label='My Jobs'
+                    labelIcon={<BriefcaseBusiness size={15} />}
+                    href="/my-jobs"
+                  />
+                  <UserButton.Link
+                    label='Saved Jobs'
+                    labelIcon={<Heart size={15} />}
+                    href="/saved-jobs"
+                  />
+                  <UserButton.Action label='manageAccount' />
+                </UserButton.MenuItems>
+              </UserButton>
+            </SignedIn>
+          </div>
+        )}
       </nav>
-
-      {/* Sign In Modal */}
       {showSignIn && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black/50"
@@ -136,7 +137,6 @@ const Header = () => {
         </div>
       )}
 
-      {/* Sign Up Modal */}
       {showSignUp && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black/50"
