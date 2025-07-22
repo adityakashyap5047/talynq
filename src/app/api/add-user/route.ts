@@ -6,6 +6,13 @@ export async function POST() {
     try {
         const user = await currentUser();
 
+        if (!user) {
+            return NextResponse.json(
+                { error: "User not authenticated." },
+                { status: 401 }
+            );
+        }
+
         const existingUser = await db?.user.findUnique({
             where: {
                 clerkUserId: user?.id
