@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
         });
         }
 
-        const whereClause = filters.length > 0 ? { OR: filters } : undefined;
+        const whereClause = filters.length > 0 ? { AND: filters } : undefined;
 
         const jobs = await db.jobs.findMany({
         where: whereClause,
