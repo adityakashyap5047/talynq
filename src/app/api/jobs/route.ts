@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
             );
         }
         
-        const {location, company_id, searchQuery} = await request.json();
+        const {location, company_id, searchQuery, page = 1, limit = 6} = await request.json();
         const filters: object[] = [];
 
         if (location) {
@@ -58,20 +58,25 @@ export async function POST(request: NextRequest) {
 
         const whereClause = filters.length > 0 ? { AND: filters } : undefined;
 
-        const jobs = await db.jobs.findMany({
-        where: whereClause,
-        include: {
-            recruiter: true,
-            company: true,
-            savedJobs: true,
-        },
-        orderBy: {
-            createdAt: "desc"
-        }
-        });
+        const [jobs, total] = await Promise.all([
+            db.jobs.findMany({
+                where: whereClause,
+                include: {
+                recruiter: true,
+                company: true,
+                savedJobs: true,
+                },
+                orderBy: {
+                createdAt: "desc"
+                },
+                skip: (page - 1) * limit,
+                take: limit
+            }),
+            db.jobs.count({ where: whereClause })
+        ]);
 
         if (jobs) {
-            return NextResponse.json(jobs, {
+            return NextResponse.json({ jobs, total }, {
                 status: 200
             });
         }
