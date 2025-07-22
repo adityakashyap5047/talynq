@@ -23,15 +23,21 @@ const JobListing = () => {
   const [location, setLocation] = useState<string>('');
   const [companyId, setCompanyId] = useState<string>('');
 
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalJobs, setTotalJobs] = useState<number>(0);
+  const limit = 3;
+
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
       setError(null);
       try {
         const response = await axios.post('/api/jobs', {
-          location: location,
+          location,
           company_id: companyId,
-          searchQuery: searchQuery,
+          searchQuery,
+          page: currentPage,
+          limit,
           headers: {
             'Content-Type': 'application/json',
           },
@@ -41,8 +47,9 @@ const JobListing = () => {
           throw new Error('Failed to fetch jobs');
         }
 
-        const data = response.data;
-        setJobs(data);
+        const {jobs: jobData, total} = response.data;
+        setJobs(jobData);
+        setTotalJobs(total);
       } catch (error) {
         setError(error instanceof Error ? error.message : 'An unexpected error occurred');
         setJobs([]);
@@ -53,7 +60,7 @@ const JobListing = () => {
     }
 
     fetchJobs();
-  }, [location, companyId, searchQuery]);
+  }, [location, companyId, searchQuery, currentPage]);
 
   useEffect(() => {
     const getCompanies = async () => {
@@ -77,6 +84,8 @@ const JobListing = () => {
 
     getCompanies();
   }, []);
+
+  const totalPages = Math.ceil(totalJobs / limit);
 
   if (!loading && error) {
     return <div className="text-red-500 bg-slate-800 p-4 rounded-sm">Error: {error}</div>;
@@ -130,7 +139,7 @@ const JobListing = () => {
           </Select>
         </div>
         <div className='flex-1 px-4 sm:px-0'>
-          <Select value={companyId} onValueChange={(value) => setCompanyId(value)}>
+          <Select disabled={isLoadingCompanies} value={companyId} onValueChange={(value) => setCompanyId(value)}>
             <SelectTrigger className='w-full'>
               <SelectValue placeholder="Filter by Company" />
             </SelectTrigger>
@@ -150,15 +159,37 @@ const JobListing = () => {
       </div>
 
       {loading ? <BarLoader className="mt-4" width={"100%"} color="#36d7b7" /> : (
-        <div className='mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 sm:px-0'>
-          {jobs?.length > 0 ? (
-            jobs.map((job) => {
-              return <JobCard key={job.id} job={job} />
-            })
-          ) : (
-            <div>No Jobs Found 😥</div>
-          )}
-        </div>
+        <>
+    {/* Job Cards Grid */}
+    <div className='mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 sm:px-0'>
+      {jobs?.length > 0 ? (
+        jobs.map((job) => <JobCard key={job.id} job={job} />)
+      ) : (
+        <div>No Jobs Found 😥</div>
+      )}
+    </div>
+
+    {/* Pagination */}
+    {totalPages > 1 && (
+      <div className="flex justify-center mt-6 gap-4">
+        <Button
+          variant="outline"
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage((prev) => prev - 1)}
+        >
+          Previous
+        </Button>
+        <span className="self-center">Page {currentPage} of {totalPages}</span>
+        <Button
+          variant="outline"
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+        >
+          Next
+        </Button>
+      </div>
+    )}
+  </>
       )}
     </div>
   )
