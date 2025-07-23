@@ -50,7 +50,7 @@ const JobPage = () => {
         try {
           await axios.post(`/api/jobs/${id}`, {status: isOpen});
           const response = await axios.get(`/api/jobs/${id}`);
-          setJob(response.data);
+          setJob(response.data.job);
         } catch (error) {
           console.error("Error fetching job:", error);
           setError(error instanceof Error ? error.message : "Failed to fetch job");
