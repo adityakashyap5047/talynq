@@ -122,8 +122,7 @@ const JobPage = () => {
       {job?.recruiter?.clerkUserId !== user?.id && (
         <ApplyJob 
           job={job}
-          user={user}
-          applied={job?.applications?.find((ap) => ap.candidate_id === userId.current)}
+          applied={!!job?.applications?.find((ap) => ap.candidate_id === userId.current)}
           setJob={setJob}
         />
       )}

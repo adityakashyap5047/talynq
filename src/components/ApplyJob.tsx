@@ -11,15 +11,23 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
 import { BarLoader } from "react-spinners";
+import { useUser } from "@clerk/nextjs";
 
 interface ApplyJobProps {
     job: Job | null;
     setJob: (job: Job | null) => void;
-    user: any;
-    applied?: any;
+    applied?: boolean;
 }
 
-const isBrowser = typeof window !== "undefined";
+interface ApplyJobFormData {
+    name: string;
+    email: string;
+    phone: string;
+    experience: number;
+    skills: string;
+    education: "Intermediate" | "Graduate" | "Post Graduate";
+    resume: FileList;
+}
 
 const schema = z.object({
     name: z.string().min(1, "Full Name is required"),
@@ -28,21 +36,23 @@ const schema = z.object({
     experience: z.number().min(0, "Years of Experience must be a positive number").int(),
     skills: z.string().min(1, "Skills are required"),
     education: z.enum(["Intermediate", "Graduate", "Post Graduate"]),
-    resume: isBrowser && z.instanceof(FileList).refine((file) => file[0] && (file[0].type === 'application/pdf' || file[0].type === 'application/msword' || file[0].type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), {
+    resume: typeof FileList !== "undefined" ? z.instanceof(FileList).refine((file) => file[0] && (file[0].type === 'application/pdf' || file[0].type === 'application/msword' || file[0].type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), {
         message: "Resume must be a PDF or Word document"
-    })
+    }) : z.any()
 });
 
-const ApplyJob = ({job, user, applied = false, setJob}: ApplyJobProps) => {
+const ApplyJob = ({job, applied = false, setJob}: ApplyJobProps) => {
 
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    const {register, handleSubmit, control, formState: { errors }, reset} = useForm({
+    const {register, handleSubmit, control, formState: { errors }, reset} = useForm<ApplyJobFormData>({
         resolver: zodResolver(schema),
     })
 
-    const onSubmit = (data) => {
+    const { user } = useUser();
+
+    const onSubmit = (data: ApplyJobFormData) => {
         const applyJob = async () => {
             setLoading(true);
             setError(null);
