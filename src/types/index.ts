@@ -51,6 +51,8 @@ export interface Application {
   name: string;
   email: string;
   phone: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface SavedJob {

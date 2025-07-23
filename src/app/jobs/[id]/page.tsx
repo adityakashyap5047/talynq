@@ -11,6 +11,7 @@ import MDEditor from '@uiw/react-md-editor';
 import { useUser } from '@clerk/nextjs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ApplyJob from '@/components/ApplyJob';
+import ApplicationCard from '@/components/ApplicationCard';
 
 const JobPage = () => {
 
@@ -125,6 +126,15 @@ const JobPage = () => {
           applied={!!job?.applications?.find((ap) => ap.candidate_id === userId.current)}
           setJob={setJob}
         />
+      )}
+
+      {job && job?.applications?.length > 0 && job?.recruiter_id === userId.current && (
+        <div className='flex flex-col gap-4'>
+          <h2 className='text-2xl sm:text-3xl font-bold text-[#1154c7]'>Applications</h2>
+          {job?.applications.map((application) => {
+            return <ApplicationCard key={application.id} application={application} />
+          })}
+        </div>
       )}
     </div>
   )

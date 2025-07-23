@@ -28,7 +28,15 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             },
             include: {
                 company: true,
-                applications: true,
+                applications: {
+                    include: {
+                        job: {
+                            include: {
+                                company: true
+                            }
+                        }
+                    }
+                },
                 recruiter: true
             }
         })
