@@ -16,6 +16,8 @@ const ApplicationCard = ({ application, isCandidate = false }: ApplicationCardPr
         link.click();
     }
 
+    console.log(application);
+
     return (
         <Card>
             <CardHeader>
@@ -43,8 +45,9 @@ const ApplicationCard = ({ application, isCandidate = false }: ApplicationCardPr
                         </div>
                     </div>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="flex justify-between">
                     <span>{new Date(application.createdAt).toLocaleDateString()}</span>
+                    {!isCandidate ? <span className="font-bold">Status: {application?.status}</span> : <></>}
                 </CardFooter>
             </CardHeader>
         </Card>
