@@ -1,3 +1,5 @@
+"use client";
+
 import { Job } from "@/types";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "./ui/drawer";
 import { Button } from "./ui/button";
@@ -7,12 +9,17 @@ import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
+import { useState } from "react";
+import { BarLoader } from "react-spinners";
 
 interface ApplyJobProps {
     job: Job | null;
+    setJob: (job: Job | null) => void;
     user: any;
     applied?: any;
 }
+
+const isBrowser = typeof window !== "undefined";
 
 const schema = z.object({
     name: z.string().min(1, "Full Name is required"),
@@ -21,27 +28,41 @@ const schema = z.object({
     experience: z.number().min(0, "Years of Experience must be a positive number").int(),
     skills: z.string().min(1, "Skills are required"),
     education: z.enum(["Intermediate", "Graduate", "Post Graduate"]),
-    resume: z.any().refine((file) => file[0] && (file[0].type === 'application/pdf' || file[0].type === 'application/msword' || file[0].type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), {
+    resume: isBrowser && z.instanceof(FileList).refine((file) => file[0] && (file[0].type === 'application/pdf' || file[0].type === 'application/msword' || file[0].type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), {
         message: "Resume must be a PDF or Word document"
     })
 });
 
-const ApplyJob = ({job, user, applied = false}: ApplyJobProps) => {
+const ApplyJob = ({job, user, applied = false, setJob}: ApplyJobProps) => {
+
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
 
     const {register, handleSubmit, control, formState: { errors }, reset} = useForm({
         resolver: zodResolver(schema),
     })
 
     const onSubmit = (data) => {
-        const applyJob = async() => {
-            const response = await axios.post('/api/application', {
-                ...data,
-                job_id: job?.id,
-                status: "APPLIED",
-                resume: data.resume[0],
-            })
-            console.log("Application response:", response.data);
-        }
+        const applyJob = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                await axios.post('/api/application', {
+                    ...data,
+                    job_id: job?.id,
+                    status: "APPLIED",
+                    resume: data.resume[0],
+                });
+                const response = await axios.get(`/api/jobs/${job?.id}`);
+                setJob(response.data.job);
+                reset();
+            } catch (error) {
+            console.error("Error fetching job:", error);
+            setError(error instanceof Error ? error.message : "Failed to fetch job");
+            } finally {
+            setLoading(false);
+            }
+        };
         applyJob();
     }
 
@@ -143,14 +164,20 @@ const ApplyJob = ({job, user, applied = false}: ApplyJobProps) => {
                 {errors?.resume && (
                     <p className="text-red-500">{errors.resume.message}</p>
                 )}
-                <Button type="submit" variant={"blue"} size={"lg"}>
+                <Button disabled={loading} type="submit" variant={"blue"} size={"lg"}>
                     Apply
                 </Button>
             </form>
             <DrawerFooter>
                 <DrawerClose asChild>
-                    <Button variant={"outline"}>Cancel</Button>
+                    <Button disabled={loading} variant={"outline"}>Cancel</Button>
                 </DrawerClose>
+                {error && (
+                    <div className='text-red-500 bg-slate-800 p-4 rounded-sm mx-4 sm:mx-0'>
+                        Error: {error}
+                    </div>
+                )}
+                {loading && <BarLoader width={"100%"} color='#1d293d' />}
             </DrawerFooter>
         </DrawerContent>
     </Drawer>

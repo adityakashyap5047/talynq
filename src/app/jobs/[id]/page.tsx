@@ -124,6 +124,7 @@ const JobPage = () => {
           job={job}
           user={user}
           applied={job?.applications?.find((ap) => ap.candidate_id === userId.current)}
+          setJob={setJob}
         />
       )}
     </div>
