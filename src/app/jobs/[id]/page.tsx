@@ -8,14 +8,19 @@ import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { BarLoader } from 'react-spinners';
 import MDEditor from '@uiw/react-md-editor';  
+import { useUser } from '@clerk/nextjs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const JobPage = () => {
 
     const { id } = useParams();
+    const { user } = useUser();
 
     const [job, setJob] = useState<Job | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    const [isLoadingJob, setIsLoadingJob] = useState<boolean>(false);
 
     useEffect(() => {
       const fetchJob = async () => {
@@ -34,7 +39,24 @@ const JobPage = () => {
       fetchJob();
     }, [id]);
 
-    console.log("Job data:", job);
+    const handleStatusChange = (value: "open" | "closed") => {
+      setIsLoadingJob(true);
+      setError(null);
+      const isOpen = value === "open";
+      const fetchStatus = async () => {
+        try {
+          await axios.post(`/api/jobs/${id}`, {status: isOpen});
+          const response = await axios.get(`/api/jobs/${id}`);
+          setJob(response.data);
+        } catch (error) {
+          console.error("Error fetching job:", error);
+          setError(error instanceof Error ? error.message : "Failed to fetch job");
+        } finally {
+          setIsLoadingJob(false);
+        }
+      }
+      fetchStatus();
+    }
 
     if(loading) {
       return <BarLoader className='mb-4' width={"100%"} color='#1d293d ' />
@@ -71,6 +93,20 @@ const JobPage = () => {
           )}
         </div>
       </div>
+
+      {isLoadingJob && <BarLoader width={"100%"} color='#1d293d' />}
+      {job?.recruiter?.clerkUserId === user?.id && (
+        <Select disabled={isLoadingJob} onValueChange={handleStatusChange}>
+          <SelectTrigger className={`w-full ${job?.isOpen ? "!bg-green-950" : "!bg-red-950"}`}>
+            <SelectValue placeholder={"Hiring Status" + (job?.isOpen ? " (Open)" : " (Closed)") } />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={'open'}>{'open'}</SelectItem>
+            <SelectItem value={'closed'}>{'closed'}</SelectItem>
+          </SelectContent>
+        </Select>
+      )}
+
       <h2 className='text-2xl sm:text-3xl font-bold'>About the job</h2>
       <p className='sm:text-lg'>{job?.description}</p>
 
