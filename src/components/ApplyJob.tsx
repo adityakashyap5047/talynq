@@ -57,12 +57,24 @@ const ApplyJob = ({job, applied = false, setJob}: ApplyJobProps) => {
             setLoading(true);
             setError(null);
             try {
-                await axios.post('/api/application', {
-                    ...data,
-                    job_id: job?.id,
-                    status: "APPLIED",
-                    resume: data.resume[0],
+                const formData = new FormData();
+
+                formData.append("name", data.name);
+                formData.append("email", data.email);
+                formData.append("phone", data.phone);
+                formData.append("experience", String(data.experience));
+                formData.append("skills", data.skills);
+                formData.append("education", data.education);
+                formData.append("resume", data.resume[0]);
+                formData.append("job_id", job?.id ?? "");
+                formData.append("status", "APPLIED");
+
+                await axios.post("/api/application", formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
                 });
+
                 const response = await axios.get(`/api/jobs/${job?.id}`);
                 setJob(response.data.job);
                 reset();
