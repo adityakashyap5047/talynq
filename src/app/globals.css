@@ -171,3 +171,9 @@
 .cl-internal-15hkgn2 {
   background: black;
 }
+
+.wmde-markdown ul {
+  list-style-type: disc;
+  padding-left: 25px;
+  color: white;
+}

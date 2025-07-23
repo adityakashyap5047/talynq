@@ -2,17 +2,15 @@ import { db } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     
     try {
-
-        const id = await params.id;
+        const { id } = await params;
         const user = await currentUser();
 
         if (!user) {
             return new Response("Unauthorized", { status: 401 });
         }
-
         const job = await db.jobs.findUnique({
             where: {
                 id: id
