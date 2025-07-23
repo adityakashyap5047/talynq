@@ -115,6 +115,10 @@ const JobPage = () => {
         source={job?.requirements}
         className='!bg-transparent sm:text-lg'
       />
+
+      {job?.recruiter?.clerkUserId !== user?.id && (
+        
+      )}
     </div>
   )
 }
