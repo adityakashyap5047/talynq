@@ -1,6 +1,10 @@
-import { Application } from "@/types"
+import { Application, ApplicationStatus } from "@/types"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import { Boxes, BriefcaseBusiness, Download, School } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import axios from "axios";
+import { useState } from "react";
+import { BarLoader } from "react-spinners";
 
 interface ApplicationCardProps {
   application: Application;
@@ -9,6 +13,10 @@ interface ApplicationCardProps {
 
 const ApplicationCard = ({ application, isCandidate = false }: ApplicationCardProps) => {
 
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>();
+    const [status, setStatus] = useState<ApplicationStatus>(application.status);
+
     const handleDownloadResume = () => {
         const link = document.createElement('a');
         link.href = application.resumeUrl;
@@ -16,10 +24,33 @@ const ApplicationCard = ({ application, isCandidate = false }: ApplicationCardPr
         link.click();
     }
 
-    console.log(application);
+    const handleSelectStatus = (value: ApplicationStatus) => {
+        const changeStatus = async() => {
+            
+            setLoading(true);
+            setError(null);
+
+            const previousStatus = status;
+            setStatus(value);
+            try {
+                const response = await axios.post(`/api/application/${application.id}`, {
+                    status: value
+                });
+                setStatus(response.data.status);
+            } catch (error) {
+                console.error("Error fetching job:", error);
+                setError(error instanceof Error ? error.message : "Failed to fetch job");
+                setStatus(previousStatus);
+            } finally {
+                setLoading(false);
+            }
+        }
+        changeStatus();
+    };
 
     return (
         <Card>
+            {loading && <div className="px-4"><BarLoader width={"100%"} color="36d7b7" /></div>}
             <CardHeader>
                 <CardTitle className="flex justify-between font-bold">
                     {isCandidate 
@@ -47,8 +78,33 @@ const ApplicationCard = ({ application, isCandidate = false }: ApplicationCardPr
                 </CardContent>
                 <CardFooter className="flex justify-between">
                     <span>{new Date(application.createdAt).toLocaleDateString()}</span>
-                    {!isCandidate ? <span className="font-bold">Status: {application?.status}</span> : <></>}
+                    {isCandidate ? <span className="font-bold">Status: {application?.status}</span> : (
+                        <Select 
+                            disabled={loading} 
+                            onValueChange={handleSelectStatus} 
+                            defaultValue={status}
+                        >
+                            <SelectTrigger 
+                                className={`w-52
+                                    ${status === 'REJECTED' ? "!bg-red-900" 
+                                        : status === 'INTERVIEWING' ? "!bg-orange-900"
+                                        : status === 'HIRED' ? "!bg-green-900"
+                                        : "!bg-gray-500"
+                                    }
+                                `}
+                            >
+                                <SelectValue placeholder={"Application Status"}/>
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value={'APPLIED'}>APPLIED</SelectItem>
+                                <SelectItem value={'INTERVIEWING'}>INTERVIEWING</SelectItem>
+                                <SelectItem value={'HIRED'}>HIRED</SelectItem>
+                                <SelectItem value={'REJECTED'}>REJECTED</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    )}
                 </CardFooter>
+                {error && <p className="text-red-500 bg-slate-700 px-4 rounded-sm py-1 mt-4">{error}</p>}
             </CardHeader>
         </Card>
     )
