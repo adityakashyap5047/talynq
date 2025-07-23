@@ -10,6 +10,7 @@ import { BarLoader } from 'react-spinners';
 import MDEditor from '@uiw/react-md-editor';  
 import { useUser } from '@clerk/nextjs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import ApplyJob from '@/components/ApplyJob';
 
 const JobPage = () => {
 
@@ -117,7 +118,11 @@ const JobPage = () => {
       />
 
       {job?.recruiter?.clerkUserId !== user?.id && (
-        
+        <ApplyJob 
+          job={job}
+          user={user}
+          applied={job?.applications?.find((ap) => ap.candidate_id === user?.id)}
+        />
       )}
     </div>
   )
