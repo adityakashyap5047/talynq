@@ -11,6 +11,17 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         if (!user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
+
+        const existingUser = await db.user.findUnique({
+            where: {
+                clerkUserId: user.id
+            }
+        });
+
+        if (!existingUser) {
+            return NextResponse.json({ error: "User not found in DB" }, { status: 404 });
+        }
+
         const job = await db.jobs.findUnique({
             where: {
                 id: id
@@ -23,7 +34,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         })
 
         if (job) {
-            return NextResponse.json(job, { status: 200 });
+            return NextResponse.json({job, userId: existingUser.id}, { status: 200 });
         }
 
         return NextResponse.json({ error: "Job not found" }, { status: 404 });

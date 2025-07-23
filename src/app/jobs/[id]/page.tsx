@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Briefcase, DoorClosed, DoorOpen, MapPinIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { BarLoader } from 'react-spinners';
 import MDEditor from '@uiw/react-md-editor';  
 import { useUser } from '@clerk/nextjs';
@@ -21,15 +21,17 @@ const JobPage = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    const [isLoadingJob, setIsLoadingJob] = useState<boolean>(false);
-
+    const [isLoadingJobStatus, setIsLoadingJobStatus] = useState<boolean>(false);
+    const userId = useRef<string | null>(null);
+    
     useEffect(() => {
       const fetchJob = async () => {
         setLoading(true);
         setError(null);
         try {
           const response = await axios.get(`/api/jobs/${id}`);
-          setJob(response.data);
+          setJob(response.data.job);
+          userId.current = response.data.userId;
         } catch (error) {
           console.error("Error fetching job:", error);
           setError(error instanceof Error ? error.message : "Failed to fetch job");
@@ -41,7 +43,7 @@ const JobPage = () => {
     }, [id]);
 
     const handleStatusChange = (value: "open" | "closed") => {
-      setIsLoadingJob(true);
+      setIsLoadingJobStatus(true);
       setError(null);
       const isOpen = value === "open";
       const fetchStatus = async () => {
@@ -53,7 +55,7 @@ const JobPage = () => {
           console.error("Error fetching job:", error);
           setError(error instanceof Error ? error.message : "Failed to fetch job");
         } finally {
-          setIsLoadingJob(false);
+          setIsLoadingJobStatus(false);
         }
       }
       fetchStatus();
@@ -95,9 +97,9 @@ const JobPage = () => {
         </div>
       </div>
 
-      {isLoadingJob && <BarLoader width={"100%"} color='#1d293d' />}
+      {isLoadingJobStatus && <BarLoader width={"100%"} color='#1d293d' />}
       {job?.recruiter?.clerkUserId === user?.id && (
-        <Select disabled={isLoadingJob} onValueChange={handleStatusChange}>
+        <Select disabled={isLoadingJobStatus} onValueChange={handleStatusChange}>
           <SelectTrigger className={`w-full ${job?.isOpen ? "!bg-green-950" : "!bg-red-950"}`}>
             <SelectValue placeholder={"Hiring Status" + (job?.isOpen ? " (Open)" : " (Closed)") } />
           </SelectTrigger>
@@ -121,7 +123,7 @@ const JobPage = () => {
         <ApplyJob 
           job={job}
           user={user}
-          applied={job?.applications?.find((ap) => ap.candidate_id === user?.id)}
+          applied={job?.applications?.find((ap) => ap.candidate_id === userId.current)}
         />
       )}
     </div>

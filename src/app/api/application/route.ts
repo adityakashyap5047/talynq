@@ -13,19 +13,34 @@ export async function POST(request: NextRequest){
             );
         }
 
+        const existingUser = await db.user.findUnique({
+            where: {
+                clerkUserId: user.id,
+            },
+        });
+
+        if (!existingUser) {
+            return NextResponse.json(
+                { error: "User not found." },
+                { status: 404 }
+            );
+        }
+
         const jobData = await request.json();
         const random = Math.floor(Math.random() * 90000);
-        const fileName = `resume-${random}-${jobData.candidate_id}`;
-
+        const fileName = `resume-${random}-${existingUser.id}`;
+        
         // upload pdf in imagekit with filename and jobData.resume and give the imagekit url in jobData.resume
-        const resumeUrl = 'resume.pdf'
-
+        const resumeUrl = `resume/${fileName}.pdf`;
+        
+        delete jobData.resume;
         const application = await db.application.create({
             data: {
                 ...jobData,
+                candidate_id: existingUser.id,
                 resumeUrl
             }
-        })
+        });
 
         return NextResponse.json(application, { status: 201 });
 
