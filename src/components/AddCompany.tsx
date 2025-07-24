@@ -97,7 +97,7 @@ const AddCompany = ({ setCompanies, xlButton = false, setCompanyCode, loadingCre
             <form className="flex flex-col sm:flex-row justify-center items-center gap-4 p-4 pb-0">
                 <Input placeholder="Company Name" {...register("name")} />
                 <Input type="file" accept="image/png, image/jpeg, image/jpg" {...register("logo")} />
-                <Button type="button" className="max-sm:w-full w-40 bg-red-500 hover:bg-red-600/50" onClick={handleSubmit(onSubmit)}>Add Company</Button>
+                <Button type="button" className="max-sm:w-full w-40 text-white bg-red-500 hover:bg-red-600/50" onClick={handleSubmit(onSubmit)}>Add Company</Button>
             </form>
             {errors.name && <p className="text-red-500 bg-slate-800 py-1 my-1 mx-4 rounded-sm px-4 text-sm">{errors.name.message}</p>}
             {typeof errors.logo?.message === "string" && <p className="text-red-500 my-1 mx-4 bg-slate-800 py-1 rounded-sm px-4 text-sm">{errors.logo.message}</p>}

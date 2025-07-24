@@ -121,27 +121,29 @@ const JobListing = () => {
         Latest Jobs
       </h1>
 
-      <form onSubmit={handleSearch} className='h-10 flex w-full gap-2 items-center mb-3 px-4 sm:px-0'>
-        <Input 
-          type='text'
-          placeholder='Search Jobs...'
-          name='search-query'
-          className='flex-1 px-4 text-md h-full'
-        />
-        <Button disabled={loading} type='submit' className='h-full sm:w-28' variant={"blue"}>Search</Button>
+      <form onSubmit={handleSearch} className='px-4 sm:px-0'>
+        <div className='bg-slate-900 h-10 flex w-full gap-2 items-center mb-3'>
+          <Input 
+            type='text'
+            placeholder='Search Jobs...'
+            name='search-query'
+            className='flex-1 px-4 text-md h-full'
+          />
+          <Button disabled={loading} type='submit' className='h-full sm:w-28' variant={"blue"}>Search</Button>
+        </div>  
       </form>
 
       <div className='flex flex-col sm:flex-row gap-2'>
         <div className='flex-1 px-4 sm:px-0'>
           <Select value={location} onValueChange={(value) => setLocation(value)}>
-            <SelectTrigger className='w-full'>
+            <SelectTrigger className='w-full !bg-slate-900 cursor-pointer'>
               <SelectValue placeholder="Filter by Location" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className='bg-slate-900'>
               <SelectGroup>
                 {State.getStatesOfCountry("IN").map(({name}) => {
                   return (
-                    <SelectItem key={name} value={name}>{name}</SelectItem>
+                    <SelectItem className="cursor-pointer data-[highlighted]:bg-slate-800" key={name} value={name}>{name}</SelectItem>
                   )
                 })}
               </SelectGroup>
@@ -150,14 +152,14 @@ const JobListing = () => {
         </div>
         <div className='flex-1 px-4 sm:px-0'>
           <Select disabled={isLoadingCompanies} value={companyId} onValueChange={(value) => setCompanyId(value)}>
-            <SelectTrigger className='w-full'>
+            <SelectTrigger className='w-full !bg-slate-900 cursor-pointer'>
               <SelectValue placeholder="Filter by Company" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className='bg-slate-900'>
               <SelectGroup>
                 {companies.map(({name, id}) => {
                   return (
-                    <SelectItem key={name} value={id}>{name}</SelectItem>
+                    <SelectItem className="cursor-pointer data-[highlighted]:bg-slate-800" key={name} value={id}>{name}</SelectItem>
                   )
                 })}
               </SelectGroup>
@@ -165,7 +167,7 @@ const JobListing = () => {
           </Select>
 
         </div>
-        <Button onClick={clearFilters} variant={"destructive"} className='mx-4 sm:mx-0 sm:w-1/2'>Clear Filters</Button>
+        <Button onClick={clearFilters} className='mx-4 bg-red-500 hover:bg-red-500/50 text-white sm:mx-0 sm:w-1/2'>Clear Filters</Button>
       </div>
 
       {loading ? <BarLoader className="mt-4" width={"100%"} color="#36d7b7" /> : (
