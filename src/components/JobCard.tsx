@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react'
-import { Job } from '@/types';
+import { Job, SavedJob } from '@/types';
 import { useUser } from '@clerk/nextjs';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { Heart, MapPinIcon, Trash2Icon } from 'lucide-react';
@@ -14,9 +14,11 @@ import { HashLoader } from 'react-spinners';
 interface JobCardProps {
   job: Job;
   isMyJob?: boolean;
+  setJobs?: React.Dispatch<React.SetStateAction<SavedJob[]>>;
+  setSavedJobLoading?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const JobCard = ({ job, isMyJob = false, }: JobCardProps) => {
+const JobCard = ({ job, isMyJob = false, setJobs, setSavedJobLoading }: JobCardProps) => {
     
     const {user} = useUser();
     const [saved, setSaved] = useState(false);
@@ -48,7 +50,7 @@ const JobCard = ({ job, isMyJob = false, }: JobCardProps) => {
         const previousSaved = saved;
         const newSaved = !saved;
         setSaved(newSaved);
-
+        setSavedJobLoading?.(true);
         try {
             setLoading(true);
             setError(null);
@@ -56,15 +58,16 @@ const JobCard = ({ job, isMyJob = false, }: JobCardProps) => {
             const response = await axios.post('/api/jobs/saved', { jobId });
 
             if ((response.status === 201 && !newSaved) || (response.status === 200 && newSaved)) {
-                
                 setError("Server state mismatch. Please try again.");
             }
-
+            const savedJobs = await axios.get('/api/jobs/saved');
+            if (setJobs) setJobs(savedJobs.data);
         } catch (error) {
             console.error("Error saving job:", error);
             setSaved(previousSaved);
             setError("Failed to save job");
         } finally {
+            setSavedJobLoading?.(false);
             setLoading(false);
         }
     };
