@@ -1,11 +1,6 @@
-"use client";
-
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import React, { Suspense } from "react";
-import Header from "@/components/Header";
-import JobListing from "./jobs/page";
 
 export default function NotFound() {
   return (
@@ -29,11 +24,6 @@ export default function NotFound() {
           Back to Home
         </Button>
       </Link>
-
-      <Suspense fallback={null}>
-        <Header />
-        <JobListing />
-      </Suspense>
     </div>
   );
 }
