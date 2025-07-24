@@ -44,7 +44,7 @@ const SavedJobs = () => {
     <div>
       <h1 className='gradient-title font-extrabold text-6xl sm:text-7xl text-center pb-8'>Saved Jobs</h1>
       {savedJobLoading && <BarLoader width={"100%"} color="#3b82f6" className='mx-auto my-8' />}
-      <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="mt-8 mx-4 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {jobs?.length ? (
           jobs.map((job) => {
             return (

@@ -47,7 +47,7 @@ const ApplyJob = ({job, applied = false, setJob}: ApplyJobProps) => {
     const [error, setError] = useState<string | null>(null);
 
     const {register, handleSubmit, control, formState: { errors }, reset} = useForm<ApplyJobFormData>({
-        resolver: zodResolver(schema),
+        resolver: zodResolver(schema)
     })
 
     const { user } = useUser();
@@ -92,11 +92,11 @@ const ApplyJob = ({job, applied = false, setJob}: ApplyJobProps) => {
   return (
     <Drawer open={applied ? false : undefined}>
         <DrawerTrigger asChild>
-            <Button size={"lg"}  variant={job?.isOpen && applied ? "blue" : "destructive"} disabled={!job?.isOpen || applied}>
+            <Button size={"lg"} className={`${job?.isOpen && !applied && "hover:!bg-red-500/50"}`}  variant={job?.isOpen && applied ? "blue" : "destructive"} disabled={!job?.isOpen || applied}>
                 {job?.isOpen ? (applied ? "Applied" : "Apply Now") : "Job Closed"}
             </Button>
         </DrawerTrigger>
-        <DrawerContent>
+        <DrawerContent className="bg-slate-800 mx-4">
             <DrawerHeader>
                 <DrawerTitle>
                     Apply for {job?.title} at {job?.company?.name}
@@ -105,62 +105,72 @@ const ApplyJob = ({job, applied = false, setJob}: ApplyJobProps) => {
             </DrawerHeader>
 
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4 pb-0">
-                <Input
-                    type="text"
-                    placeholder="Full Name"
-                    className="flex-1"
-                    defaultValue={user?.fullName || ""}
-                    {...register("name")}
-                />
-                {errors?.name && (
-                    <p className="text-red-500">{errors.name.message}</p>
-                )}
-                <Input
-                    type="email"
-                    placeholder="Email"
-                    className="flex-1"
-                    defaultValue={user?.emailAddresses[0]?.emailAddress || ""}
-                    {...register("email")}
-                />
-                {errors?.email && (
-                    <p className="text-red-500">{errors.email.message}</p>
-                )}
-                <Input
-                    type="text"
-                    placeholder="Phone Number"
-                    className="flex-1"
-                    {...register("phone")}
-                />
-                {errors?.phone && (
-                    <p className="text-red-500">{errors.phone.message}</p>
-                )}
-                <Input
-                    type="number"
-                    placeholder="Years of Experience"
-                    className="flex-1"
-                    {...register("experience", {
-                        valueAsNumber: true,
-                    })}
-                />
-                {errors?.experience && (
-                    <p className="text-red-500">{errors.experience.message}</p>
-                )}
-                <Input
-                    type="text"
-                    placeholder="Skills (Comma separated)"
-                    className="flex-1"
-                    {...register("skills")}
-                />
-                {errors?.skills && (
-                    <p className="text-red-500">{errors.skills.message}</p>
-                )}
+                <div className="bg-slate-900 rounded-sm">
+                    <Input
+                        type="text"
+                        placeholder="Full Name"
+                        className="flex-1"
+                        defaultValue={user?.fullName || ""}
+                        {...register("name")}
+                    />
+                    {errors?.name && (
+                        <p className="text-red-500">{errors.name.message}</p>
+                    )}
+                </div>
+                <div className="bg-slate-900 rounded-sm">
+                    <Input
+                        type="email"
+                        placeholder="Email"
+                        className="flex-1"
+                        defaultValue={user?.emailAddresses[0]?.emailAddress || ""}
+                        {...register("email")}
+                    />
+                    {errors?.email && (
+                        <p className="text-red-500">{errors.email.message}</p>
+                    )}
+                </div>
+                <div className="bg-slate-900 rounded-sm">
+                    <Input
+                        type="text"
+                        placeholder="Phone Number"
+                        className="flex-1"
+                        {...register("phone")}
+                    />
+                    {errors?.phone && (
+                        <p className="text-red-500">{errors.phone.message}</p>
+                    )}
+                </div>
+                <div className="bg-slate-900 rounded-sm">
+                    <Input
+                        type="number"
+                        placeholder="Years of Experience"
+                        className="flex-1"
+                        {...register("experience", {
+                            valueAsNumber: true,
+                        })}
+                    />
+                    {errors?.experience && (
+                        <p className="text-red-500">{errors.experience.message}</p>
+                    )}
+                </div>
+                <div className="bg-slate-900 rounded-sm">
+                    <Input
+                            type="text"
+                            placeholder="Skills (Comma separated)"
+                            className="flex-1"
+                        {...register("skills")}
+                    />
+                    {errors?.skills && (
+                        <p className="text-red-500">{errors.skills.message}</p>
+                    )}
+                </div>
                 <Controller 
                     name="education"
                     control={control}
-                    render={({field}) => (
-                        <RadioGroup onValueChange={field.onChange} {...field}>
+                    render={({ field }) => (
+                        <RadioGroup className="flex flex-col sm:flex-row" onValueChange={field.onChange} {...field}>
                             <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="Intermediate" id="intermediate" />
+                                <RadioGroupItem className="bg-slate-900" value="Intermediate" id="intermediate" />
                                 <label htmlFor="intermediate">Intermediate</label>
                             </div>
                             <div className="flex items-center space-x-2">
@@ -177,22 +187,24 @@ const ApplyJob = ({job, applied = false, setJob}: ApplyJobProps) => {
                 {errors?.education && (
                     <p className="text-red-500">{errors.education.message}</p>
                 )}
-                <Input
-                    type="file"
-                    accept=".pdf, .doc, .docx"
-                    className="flex-1 file:text-gray-500 file:pr-4"
-                    {...register("resume")}
-                />
-                {errors?.resume && (
-                    <p className="text-red-500">{errors.resume.message}</p>
-                )}
+                <div className="bg-slate-900 rounded-sm">
+                    <Input
+                        type="file"
+                        accept=".pdf, .doc, .docx"
+                        className="flex-1 file:text-gray-500 file:pr-4"
+                        {...register("resume")}
+                    />
+                    {errors?.resume && (
+                        <p className="text-red-500">{errors.resume.message}</p>
+                    )}
+                </div>
                 <Button disabled={loading} type="submit" variant={"blue"} size={"lg"}>
                     Apply
                 </Button>
             </form>
             <DrawerFooter>
                 <DrawerClose asChild>
-                    <Button disabled={loading} variant={"outline"}>Cancel</Button>
+                    <Button onClick={() => reset()} disabled={loading} className="bg-slate-900 hover:bg-slate-900/50 text-white">Cancel</Button>
                 </DrawerClose>
                 {error && (
                     <div className='text-red-500 bg-slate-800 p-4 rounded-sm mx-4 sm:mx-0'>
