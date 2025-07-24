@@ -126,7 +126,7 @@ const Header = () => {
       </nav>
       {showSignIn && (
         <div
-          className="fixed inset-0 flex items-center justify-center bg-black/50"
+          className="fixed inset-0 flex items-center z-20 justify-center bg-black/50"
           onClick={handleOverlayClick}
         >
           <SignIn
@@ -139,7 +139,7 @@ const Header = () => {
 
       {showSignUp && (
         <div
-          className="fixed inset-0 flex items-center justify-center bg-black/50"
+          className="fixed inset-0 flex z-20 items-center justify-center bg-black/50"
           onClick={handleOverlayClick}
         >
           <SignUp
