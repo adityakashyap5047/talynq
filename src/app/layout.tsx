@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from '@clerk/themes'
+import HeaderClient from "@/components/HeaderClient";
+import FooterClient from "@/components/FooterClient";
 
 export const metadata: Metadata = {
   title: "Talynq",
@@ -42,11 +42,11 @@ export default function RootLayout({
             <div className="bg-grid" />
             <ThemeProvider defaultTheme="dark" attribute="class">
               <div className="min-h-screen flex flex-col">
-                <Header />
+                <HeaderClient />
                 <main className="flex-1 container mx-auto lg:max-w-[95%]">
                   {children}
                 </main>
-                <Footer />
+                <FooterClient />
               </div>
             </ThemeProvider>
           </body>
