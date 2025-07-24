@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+
+const Header = dynamic(() => import("@/components/Header"), { ssr: false });
+const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
 
 export default function NotFound() {
   return (
@@ -24,6 +29,11 @@ export default function NotFound() {
           Back to Home
         </Button>
       </Link>
+
+      <Suspense fallback={null}>
+        <Header />
+        <Footer />
+      </Suspense>
     </div>
   );
 }
