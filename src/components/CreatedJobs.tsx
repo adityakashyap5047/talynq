@@ -53,6 +53,7 @@ const CreatedJobs = () => {
                   isMyJob={true}
                   setIsDeleting={setIsDeleting}
                   setDeletedJobs={setJobs}
+                  isDeleting={isDeleting}
                 />
               )
             })

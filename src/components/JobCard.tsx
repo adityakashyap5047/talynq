@@ -18,9 +18,10 @@ interface JobCardProps {
   setSavedJobLoading?: React.Dispatch<React.SetStateAction<boolean>>;
   setIsDeleting?: React.Dispatch<React.SetStateAction<boolean>>;
   setDeletedJobs?: React.Dispatch<React.SetStateAction<Job[]>>;
+  isDeleting?: boolean;
 }
 
-const JobCard = ({ job, isMyJob = false, setJobs, setSavedJobLoading, setIsDeleting, setDeletedJobs }: JobCardProps) => {
+const JobCard = ({ job, isMyJob = false, setJobs, setSavedJobLoading, setIsDeleting, setDeletedJobs, isDeleting }: JobCardProps) => {
     
     const {user} = useUser();
     const [saved, setSaved] = useState(false);
@@ -98,7 +99,7 @@ const JobCard = ({ job, isMyJob = false, setJobs, setSavedJobLoading, setIsDelet
     }
 
     return (
-        <Card className='flex flex-col'>
+        <Card className={`flex flex-col transition-opacity ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}>
             <CardHeader>
                 <CardTitle className='flex justify-between font-bold'>
                     {job.title}
@@ -106,8 +107,8 @@ const JobCard = ({ job, isMyJob = false, setJobs, setSavedJobLoading, setIsDelet
                         <Trash2Icon
                             fill='red'
                             size={18}
-                            className='text-red-300 cursor-pointer'
-                            onClick={handleDeleteJob}
+                            className={`text-red-300 ${isDeleting ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                            onClick={!isDeleting ? handleDeleteJob : undefined}
                         />
                     )}
                 </CardTitle>
@@ -125,7 +126,7 @@ const JobCard = ({ job, isMyJob = false, setJobs, setSavedJobLoading, setIsDelet
             </CardContent>
             <CardFooter className='flex gap-2'>
                 <Link href={`/jobs/${job.id}`} className='flex-1'>
-                    <Button variant={"secondary"} className='w-full'>
+                    <Button variant={"secondary"} className={`w-full ${isDeleting ? "cursor-not-allowed" : "cursor-pointer"}`} disabled={isDeleting}>
                         More Details
                     </Button>
                 </Link>
