@@ -101,12 +101,12 @@ const JobPage = () => {
       {isLoadingJobStatus && <BarLoader width={"100%"} color='#1d293d' />}
       {job?.recruiter?.clerkUserId === user?.id && (
         <Select disabled={isLoadingJobStatus} onValueChange={handleStatusChange}>
-          <SelectTrigger className={`w-full ${job?.isOpen ? "!bg-green-950" : "!bg-red-950"}`}>
+          <SelectTrigger className={`w-full cursor-pointer ${job?.isOpen ? "!bg-green-900" : "!bg-red-900"}`}>
             <SelectValue placeholder={"Hiring Status" + (job?.isOpen ? " (Open)" : " (Closed)") } />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={'open'}>{'open'}</SelectItem>
-            <SelectItem value={'closed'}>{'closed'}</SelectItem>
+          <SelectContent className='bg-slate-900'>
+            <SelectItem className="cursor-pointer data-[highlighted]:bg-slate-800" value={'open'}>{'open'}</SelectItem>
+            <SelectItem className="cursor-pointer data-[highlighted]:bg-slate-800" value={'closed'}>{'closed'}</SelectItem>
           </SelectContent>
         </Select>
       )}
