@@ -24,6 +24,7 @@ model User {
   jobs Jobs[]
   applications Application[]
   savedJobs SavedJobs[]
+  recruiter Company[]
 }
 
 model Company {
@@ -33,6 +34,8 @@ model Company {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   jobs Jobs[]
+  recruiter User? @relation(fields: [recruiter_id], references: [id], onDelete: Cascade)
+  recruiter_id String?
 }
 
 model Jobs {

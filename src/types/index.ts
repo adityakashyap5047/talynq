@@ -9,6 +9,7 @@ export interface User {
   jobs?: Job[];
   applications?: Application[];
   savedJobs?: SavedJob[];
+  recruiter?: Company[];
 }
 
 export interface Company {
@@ -18,6 +19,8 @@ export interface Company {
   createdAt: string;
   updatedAt: string;
   jobs?: Job[];
+  recruiter_id: string;
+  recruiter?: User;
 }
 
 export interface Job {
