@@ -63,3 +63,58 @@ export async function POST(request: NextRequest) {
         );
     }
 }
+
+export async function GET(){
+    try {
+        const user = await currentUser();
+
+        if (!user) {
+            return NextResponse.json(
+                { error: "User not authenticated." },
+                { status: 401 }
+            );
+        }
+
+        const existingUser = await db.user.findUnique({
+            where: {
+                clerkUserId: user.id
+            },   
+            select: {id: true}
+        });
+
+        if (!existingUser) {
+            return NextResponse.json(
+                { error: "User not found in DB." },
+                { status: 404 }
+            );
+        }
+
+        const savedJobs = await db.savedJobs.findMany({
+            where: {
+                user_id: existingUser.id
+            },
+            include: {
+                job: {
+                    include: {
+                        company: true,
+                    }
+                }
+            }
+        });
+
+        if(!savedJobs || savedJobs.length === 0) {
+            return NextResponse.json({ 
+                message: "No saved jobs found.",
+                code: "NO_SAVED_JOBS"
+            }, { status: 202 });
+        }
+        return NextResponse.json(savedJobs, { status: 200 });
+    } catch (error) {
+        return NextResponse.json(
+            {
+                error: (error as Error).message || "Something went wrong while fetching the saved jobs.",
+            },
+            { status: 500 }
+        );
+    }
+}

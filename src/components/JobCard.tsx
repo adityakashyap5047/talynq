@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react'
+import React, { use, useState } from 'react'
 import { Job } from '@/types';
 import { useUser } from '@clerk/nextjs';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
@@ -31,7 +31,7 @@ const JobCard = ({ job, isMyJob = false, }: JobCardProps) => {
             setLoading(true);
             setError(null);
 
-            const response = await axios.post('/api/saved-job', { jobId });
+            const response = await axios.post('/api/jobs/saved', { jobId });
 
             if ((response.status === 201 && !newSaved) || (response.status === 200 && newSaved)) {
                 
@@ -71,7 +71,7 @@ const JobCard = ({ job, isMyJob = false, }: JobCardProps) => {
                     </div>    
                 </div>
                 <hr />
-                {job.description.substring(0, job.description.indexOf(".")) || job.description}...
+                {job?.description?.substring(0, job.description.indexOf(".")) || job.description}...
             </CardContent>
             <CardFooter className='flex gap-2'>
                 <Link href={`/jobs/${job.id}`} className='flex-1'>
