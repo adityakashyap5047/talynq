@@ -90,14 +90,14 @@ const AddCompany = ({ setCompanies, xlButton = false, setCompanyCode }: { setCom
             {!xlButton ? <Button type="button" size={"sm"} variant={"secondary"}>Add Company</Button>
             : <Button variant={"blue"} size={"xl"}>Add Company</Button>}
         </DrawerTrigger>
-        <DrawerContent>
+        <DrawerContent className="bg-slate-800">
             <DrawerHeader>
                 <DrawerTitle>Add a New Company</DrawerTitle>
             </DrawerHeader>
             <form className="flex flex-col sm:flex-row justify-center items-center gap-2 p-4 pb-0">
                 <Input placeholder="Company Name" {...register("name")} />
                 <Input type="file" accept="image/png, image/jpeg, image/jpg" {...register("logo")} />
-                <Button type="button" variant={"destructive"} className="w-40" onClick={handleSubmit(onSubmit)}>Add Company</Button>
+                <Button type="button" className="w-40 bg-red-500 hover:bg-red-600/50" onClick={handleSubmit(onSubmit)}>Add Company</Button>
             </form>
             {errors.name && <p className="text-red-500 bg-slate-800 py-1 my-1 mx-4 rounded-sm px-4 text-sm">{errors.name.message}</p>}
             {typeof errors.logo?.message === "string" && <p className="text-red-500 my-1 mx-4 bg-slate-800 py-1 rounded-sm px-4 text-sm">{errors.logo.message}</p>}
@@ -105,7 +105,7 @@ const AddCompany = ({ setCompanies, xlButton = false, setCompanyCode }: { setCom
 
             <DrawerFooter>
                 <DrawerClose asChild>
-                    <Button type="button" onClick={() => reset()} variant={"secondary"}>Cancel</Button>
+                    <Button type="button" onClick={() => reset()} className="bg-slate-900 text-white hover:bg-slate-900/50">Cancel</Button>
                 </DrawerClose>
                 {loading && <BarLoader color="#3b82f6" width={"100%"} />}
             </DrawerFooter>

@@ -94,7 +94,7 @@ const PostJob = () => {
   };
 
   if (!isLoaded || loading) {
-    return <BarLoader className="mb-4" width={"100%"} color="#36db7" />
+    return <BarLoader className="mb-4" width={"100%"} color="#36d7b7" />
   }
 
   if(user?.unsafeMetadata?.role !== "recruiter") {
