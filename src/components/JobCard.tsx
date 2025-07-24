@@ -99,7 +99,7 @@ const JobCard = ({ job, isMyJob = false, setJobs, setSavedJobLoading, setIsDelet
     }
 
     return (
-        <Card className={`flex flex-col transition-opacity ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}>
+        <Card className={`flex flex-col bg-slate-800 transition-opacity ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}>
             <CardHeader>
                 <CardTitle className='flex justify-between font-bold'>
                     {job.title}
@@ -126,7 +126,7 @@ const JobCard = ({ job, isMyJob = false, setJobs, setSavedJobLoading, setIsDelet
             </CardContent>
             <CardFooter className='flex gap-2'>
                 <Link href={`/jobs/${job.id}`} className='flex-1'>
-                    <Button variant={"secondary"} className={`w-full ${isDeleting ? "cursor-not-allowed" : "cursor-pointer"}`} disabled={isDeleting}>
+                    <Button variant={"secondary"} className={`w-full bg-slate-900 hover:bg-slate-900/50 ${isDeleting ? "cursor-not-allowed" : "cursor-pointer"}`} disabled={isDeleting}>
                         More Details
                     </Button>
                 </Link>
