@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Job } from '@/types';
 import { useUser } from '@clerk/nextjs';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import axios from 'axios';
+import { HashLoader } from 'react-spinners';
 
 interface JobCardProps {
   job: Job;
@@ -21,6 +22,27 @@ const JobCard = ({ job, isMyJob = false, }: JobCardProps) => {
     const [saved, setSaved] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const [loadingSavedJob, setLoadingSavedJob] = useState<boolean>(false);
+
+    useEffect(() => {
+        const fetchSavedStatus = async () => {
+            setLoadingSavedJob(true);
+            try {
+                const res = await axios.post(`/api/jobs/saved/status`, {
+                    jobId: job.id
+                });
+
+                if (res.status === 200 && res.data?.isSaved) {
+                    setSaved(true);
+                }
+            } catch (err) {
+                console.error("Failed to fetch saved job status", err);
+            }
+            setLoadingSavedJob(false);
+        };
+        fetchSavedStatus();
+    }, [job.id]);
 
     const handleSavedJobClick = async (jobId: string) => {
         const previousSaved = saved;
@@ -47,6 +69,9 @@ const JobCard = ({ job, isMyJob = false, }: JobCardProps) => {
         }
     };
 
+    if (loadingSavedJob) {
+        return <HashLoader color="#3b82f6" speedMultiplier={1.7} size={60} className='mx-auto my-8' />
+    }
 
     return (
         <Card className='flex flex-col'>
