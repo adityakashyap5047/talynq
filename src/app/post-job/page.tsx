@@ -114,9 +114,7 @@ const PostJob = () => {
       <div className="text-center my-18 flex flex-col items-center justify-center">
         <h1 className="text-4xl flex-1 gradient-title font-bold my-8">No Companies Found</h1>
         <p className="text-xl my-12">Please add a company to continue.</p>
-        <Link href="/add-company">
-          <Button variant={"blue"} size={"xl"}>Add Company</Button>
-        </Link>
+        <AddCompany setCompanies={setCompanies} setCompanyCode={setCompanyCode} xlButton={true} />
       </div>
     );
   }
@@ -170,7 +168,7 @@ const PostJob = () => {
               </Select>
             )}
           />
-          <AddCompany />
+          <AddCompany setCompanies={setCompanies} setCompanyCode={setCompanyCode} />
         </div>
           {error && <p className="bg-slate-800 px-4 py-2 rounded-sm text-red-500">{error}</p>}
           {errors.location && <p className="text-red-500">{errors.location.message}</p>}
