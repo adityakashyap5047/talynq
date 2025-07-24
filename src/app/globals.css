@@ -183,3 +183,7 @@
   padding-left: 25px;
   color: white;
 }
+
+.w-md-editor-preview > .wmde-markdown-color {
+  background: #0f172b;
+}

@@ -16,7 +16,7 @@ const schema = z.object({
     }) : z.any()
 })
 
-const AddCompany = ({ setCompanies, xlButton = false, setCompanyCode }: { setCompanies: React.Dispatch<React.SetStateAction<Company[]>>; xlButton?: boolean; setCompanyCode: React.Dispatch<React.SetStateAction<string>> }) => {
+const AddCompany = ({ setCompanies, xlButton = false, setCompanyCode, loadingCreatedJob = false }: { setCompanies: React.Dispatch<React.SetStateAction<Company[]>>; xlButton?: boolean; setCompanyCode: React.Dispatch<React.SetStateAction<string>>; loadingCreatedJob?: boolean }) => {
 
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -87,17 +87,17 @@ const AddCompany = ({ setCompanies, xlButton = false, setCompanyCode }: { setCom
   return (
     <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
-            {!xlButton ? <Button type="button" size={"sm"} variant={"secondary"}>Add Company</Button>
+            {!xlButton ? <Button type="button" disabled={loadingCreatedJob} className="max-sm:w-full bg-slate-700 hover:bg-slate-400/50" size={"sm"} variant={"secondary"}>Add Company</Button>
             : <Button variant={"blue"} size={"xl"}>Add Company</Button>}
         </DrawerTrigger>
-        <DrawerContent className="bg-slate-800">
+        <DrawerContent className="bg-slate-800 mx-4">
             <DrawerHeader>
                 <DrawerTitle>Add a New Company</DrawerTitle>
             </DrawerHeader>
-            <form className="flex flex-col sm:flex-row justify-center items-center gap-2 p-4 pb-0">
+            <form className="flex flex-col sm:flex-row justify-center items-center gap-4 p-4 pb-0">
                 <Input placeholder="Company Name" {...register("name")} />
                 <Input type="file" accept="image/png, image/jpeg, image/jpg" {...register("logo")} />
-                <Button type="button" className="w-40 bg-red-500 hover:bg-red-600/50" onClick={handleSubmit(onSubmit)}>Add Company</Button>
+                <Button type="button" className="max-sm:w-full w-40 bg-red-500 hover:bg-red-600/50" onClick={handleSubmit(onSubmit)}>Add Company</Button>
             </form>
             {errors.name && <p className="text-red-500 bg-slate-800 py-1 my-1 mx-4 rounded-sm px-4 text-sm">{errors.name.message}</p>}
             {typeof errors.logo?.message === "string" && <p className="text-red-500 my-1 mx-4 bg-slate-800 py-1 rounded-sm px-4 text-sm">{errors.logo.message}</p>}

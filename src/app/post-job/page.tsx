@@ -77,10 +77,8 @@ const PostJob = () => {
       setLoadingCreatedJob(true);
       setErrorCreatedJob(null);
       try {
-        const response = await axios.post("/api/recruiter/jobs", data);
-        if (response.status === 200) {
-          router.push("/jobs");
-        }
+        await axios.post("/api/recruiter/jobs", data);
+        router.push("/jobs");
       } catch (error) {
         console.error('Error creating job:', error);
         setErrorCreatedJob(error instanceof Error ? error.message : 'An unexpected error occurred while creating the job');
@@ -122,69 +120,75 @@ const PostJob = () => {
   return (
     <div>
       <h1 className="gradient-title font-extrabold text-5xl sm:text-7xl text-center px-8">Post a Job</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4 pb-0">
-        <Input placeholder="Job Title" {...register("title")} />
-        {errors.title && <p className="text-red-500">{errors.title.message}</p>}
-        <Textarea placeholder="Job Description" {...register("description")} />
-        {errors.description && <p className="text-red-500">{errors.description.message}</p>}
-        <div className="flex gap-4 items-center">
+      <div className="m-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4 pb-0">
+          <div className="bg-slate-900">
+            <Input id="title" placeholder="Job Title" {...register("title")} />
+            {errors.title && <p className="text-red-500">{errors.title.message}</p>}
+          </div>
+          <div className="bg-slate-900">
+            <Textarea placeholder="Job Description" {...register("description")} />
+            {errors.description && <p className="text-red-500">{errors.description.message}</p>}
+          </div>
+          <div className="flex gap-4 flex-col sm:flex-row items-center">
+            <Controller
+              name="location"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger className='w-full !bg-slate-900 cursor-pointer'>
+                    <SelectValue placeholder="Location" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900">
+                    <SelectGroup>
+                      {State.getStatesOfCountry("IN").map(({name}) => {
+                        return (
+                          <SelectItem className="cursor-pointer data-[highlighted]:bg-slate-800" key={name} value={name}>{name}</SelectItem>
+                        )
+                      })}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            <Controller
+              name="company_id"
+              control={control}
+              render={({ field }) => (
+                <Select disabled={loading} value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger className='w-full !bg-slate-900 cursor-pointer'>
+                    <SelectValue placeholder="Company" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900">
+                    <SelectGroup>
+                      {companies.map(({name, id}) => {
+                        return (
+                          <SelectItem className="cursor-pointer data-[highlighted]:bg-slate-800" key={name} value={id}>{name}</SelectItem>
+                        )
+                      })}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            <AddCompany loadingCreatedJob={loadingCreatedJob} setCompanies={setCompanies} setCompanyCode={setCompanyCode} />
+          </div>
+            {error && <p className="bg-slate-800 px-4 py-2 rounded-sm text-red-500">{error}</p>}
+            {errors.location && <p className="text-red-500">{errors.location.message}</p>}
+            {errors.company_id && <p className="text-red-500">{errors.company_id.message}</p>}
           <Controller
-            name="location"
+            name="requirements"
             control={control}
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className='w-full'>
-                  <SelectValue placeholder="Location" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {State.getStatesOfCountry("IN").map(({name}) => {
-                      return (
-                        <SelectItem key={name} value={name}>{name}</SelectItem>
-                      )
-                    })}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <MDEditor className="!bg-slate-900" value={field.value} onChange={field.onChange} />
             )}
           />
-          <Controller
-            name="company_id"
-            control={control}
-            render={({ field }) => (
-              <Select disabled={loading} value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className='w-full'>
-                  <SelectValue placeholder="Company" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {companies.map(({name, id}) => {
-                      return (
-                        <SelectItem key={name} value={id}>{name}</SelectItem>
-                      )
-                    })}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-          />
-          <AddCompany setCompanies={setCompanies} setCompanyCode={setCompanyCode} />
-        </div>
-          {error && <p className="bg-slate-800 px-4 py-2 rounded-sm text-red-500">{error}</p>}
-          {errors.location && <p className="text-red-500">{errors.location.message}</p>}
-          {errors.company_id && <p className="text-red-500">{errors.company_id.message}</p>}
-        <Controller
-          name="requirements"
-          control={control}
-          render={({ field }) => (
-            <MDEditor value={field.value} onChange={field.onChange} />
-          )}
-        />
-        {errors.requirements && <p className="text-red-500">{errors.requirements.message}</p>}
-        <Button disabled={loadingCreatedJob} type="submit" variant={"blue"} size={"lg"} className="mt-2">Submit</Button>
-        {errorCreatedJob && <p className="bg-slate-800 mt-4 px-4 py-2 rounded-sm text-red-500">{errorCreatedJob}</p>}
-        {loadingCreatedJob && <BarLoader className="mt-4" width={"100%"} color="#36db7" />}
-      </form>
+          {errors.requirements && <p className="text-red-500">{errors.requirements.message}</p>}
+          <Button disabled={loadingCreatedJob} type="submit" variant={"blue"} size={"lg"} className="mt-2">Submit</Button>
+          {errorCreatedJob && <p className="bg-slate-800 mt-4 px-4 py-2 rounded-sm text-red-500">{errorCreatedJob}</p>}
+          {loadingCreatedJob && <BarLoader className="mt-4" width={"100%"} color="#36db7" />}
+        </form>
+      </div>
     </div>
   )
 }
