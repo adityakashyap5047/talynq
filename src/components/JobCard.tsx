@@ -16,9 +16,11 @@ interface JobCardProps {
   isMyJob?: boolean;
   setJobs?: React.Dispatch<React.SetStateAction<SavedJob[]>>;
   setSavedJobLoading?: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsDeleting?: React.Dispatch<React.SetStateAction<boolean>>;
+  setDeletedJobs?: React.Dispatch<React.SetStateAction<Job[]>>;
 }
 
-const JobCard = ({ job, isMyJob = false, setJobs, setSavedJobLoading }: JobCardProps) => {
+const JobCard = ({ job, isMyJob = false, setJobs, setSavedJobLoading, setIsDeleting, setDeletedJobs }: JobCardProps) => {
     
     const {user} = useUser();
     const [saved, setSaved] = useState(false);
@@ -45,6 +47,25 @@ const JobCard = ({ job, isMyJob = false, setJobs, setSavedJobLoading }: JobCardP
         };
         fetchSavedStatus();
     }, [job.id]);
+
+    const handleDeleteJob = () => {
+        const deleteJob = async () => {
+            setIsDeleting?.(true);
+            try {
+                await axios.delete(`/api/recruiter/jobs`, {
+                    data: {
+                        jobId: job.id
+                    }
+                });
+                setDeletedJobs?.((jobs) => jobs.filter(j => j.id !== job.id));
+            } catch (error) {
+                console.error("Error deleting job:", error);
+            } finally{
+                setIsDeleting?.(false);
+            }
+        }
+        deleteJob();
+    }
 
     const handleSavedJobClick = async (jobId: string) => {
         const previousSaved = saved;
@@ -83,9 +104,10 @@ const JobCard = ({ job, isMyJob = false, setJobs, setSavedJobLoading }: JobCardP
                     {job.title}
                     {isMyJob && (
                         <Trash2Icon
-                        fill='red'
-                        size={18}
-                        className='text-red-300 cursor-pointer'
+                            fill='red'
+                            size={18}
+                            className='text-red-300 cursor-pointer'
+                            onClick={handleDeleteJob}
                         />
                     )}
                 </CardTitle>

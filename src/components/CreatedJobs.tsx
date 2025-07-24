@@ -11,6 +11,8 @@ const CreatedJobs = () => {
     const [error, setError] = useState<string | null>(null);
     const [jobs, setJobs] = useState<Job[]>([]);
 
+    const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
     useEffect(() => {
         const fetchJobs = async () => {
             setLoading(true);
@@ -40,20 +42,25 @@ const CreatedJobs = () => {
     }
 
     return (
-      <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {jobs?.length ? (
-          jobs.map((job) => {
-            return (
-              <JobCard
-                key={job.id}
-                job={job}
-                isMyJob={true}
-              />
-            )
-          })
-        ) : (
-          <div>No Jobs Found 🙄</div>
-        )}
+      <div className="px-4">
+        <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {jobs?.length ? (
+            jobs.map((job) => {
+              return (
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  isMyJob={true}
+                  setIsDeleting={setIsDeleting}
+                  setDeletedJobs={setJobs}
+                />
+              )
+            })
+          ) : (
+            <div>No Jobs Found 🙄</div>
+          )}
+        </div>
+        {isDeleting && <BarLoader width={"100%"} color="#3b82f6" className='mx-auto my-8' />}
       </div>
     )
 }

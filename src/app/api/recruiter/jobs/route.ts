@@ -117,3 +117,69 @@ export async function GET() {
         );
     }
 }
+
+export async function DELETE(request: NextRequest) {
+    try {
+        const user = await currentUser();
+        
+        if (!user) {
+            return NextResponse.json(
+                { error: "User not authenticated." },
+                { status: 401 }
+            );
+        }
+
+        const existingUser = await db?.user.findUnique({
+            where: {
+                clerkUserId: user?.id
+            },
+        });
+
+        if (!existingUser) {
+            return NextResponse.json(
+                { error: "User not found." },
+                { status: 404 }
+            );
+        }
+
+        const isRecruiter = await clerkClient.users.getUser(user.id);
+        const unsafeMetadata = isRecruiter.unsafeMetadata;
+
+        if (unsafeMetadata?.role !== "recruiter") {
+            return NextResponse.json(
+                { error: "User is not a recruiter." },
+                { status: 403 }
+            );
+        }
+
+        const { jobId } = await request.json();
+
+        const job = await db.jobs.delete({
+            where: {
+                id: jobId,
+                recruiter_id: existingUser.id
+            }
+        });
+
+        if (job) {
+            return NextResponse.json({
+                message: "Job deleted successfully.",
+                job
+            }, { status: 200 });
+        }
+
+        return NextResponse.json(
+            { error: "Job not found or you do not have permission to delete this job." },
+            { status: 404 }
+        );
+    } catch (error) {
+        return NextResponse.json(
+            {
+                error: (error as Error).message || "Unknown error occurred while deleting job."
+            },
+            {
+                status: 500
+            }
+        );
+    }
+}
