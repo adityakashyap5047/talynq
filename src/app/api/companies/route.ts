@@ -18,7 +18,7 @@ export async function GET() {
         const companies = await db?.company.findMany()
 
         if (!companies || companies.length === 0) {
-            return NextResponse.json({ message: "No companies found" }, { status: 404 });
+            return NextResponse.json({ message: "No companies found" }, { status: 202 });
         }
 
         return NextResponse.json(companies, { status: 200 });

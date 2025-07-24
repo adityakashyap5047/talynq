@@ -88,3 +88,60 @@ export async function POST(request: NextRequest){
         return NextResponse.json({ error: (error as Error).message || "Internal Server Error" }, { status: 500 });
     }
 }
+
+export async function GET() {
+    try {
+        const user = await currentUser();
+        
+        if (!user) {
+            return NextResponse.json(
+                { error: "User not authenticated." },
+                { status: 401 }
+            );
+        }
+
+        const existingUser = await db?.user.findUnique({
+            where: {
+                clerkUserId: user?.id
+            },
+        });
+
+        if (!existingUser) {
+            return NextResponse.json(
+                { error: "User not found." },
+                { status: 404 }
+            );
+        }
+
+        const applications = await db?.application.findMany({
+            where: {
+                candidate_id: existingUser.id
+            },
+            include: {
+                job: {
+                    include: {
+                        company: true
+                    }
+                }
+            }
+        });
+
+        if(!applications || applications.length === 0) {
+            return NextResponse.json(
+                { error: "No applications found." },
+                { status: 202 }
+            );
+        }
+
+        return NextResponse.json(applications, { status: 200 });
+    } catch (error) {
+        return NextResponse.json(
+            {
+                error: (error as Error).message || "Unknown error occurred while fetching applications."
+            },
+            {
+                status: 500
+            }
+        );
+    }
+}

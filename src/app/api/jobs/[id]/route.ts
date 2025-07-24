@@ -45,7 +45,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             return NextResponse.json({job, userId: existingUser.id}, { status: 200 });
         }
 
-        return NextResponse.json({ error: "Job not found" }, { status: 404 });
+        return NextResponse.json({ error: "Job not found" }, { status: 202 });
     } catch (error) {
         return NextResponse.json({ error: (error as Error).message || "Internal Server Error" }, { status: 500 });
     }
@@ -79,11 +79,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         })
 
         if (!job) {
-            return NextResponse.json({ error: "Job not found" }, { status: 404 });
+            return NextResponse.json({ error: "Job not found" }, { status: 202 });
         }
 
         if (job?.recruiter_id !== existingUser?.id) {
-            return NextResponse.json({ error: "You doon't have the permission to do this"}, {status: 401})
+            return NextResponse.json({ error: "You don't have the permission to do this"}, {status: 401})
         }
 
         const updatedJob = await db.jobs.update({

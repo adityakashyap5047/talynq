@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json(
             { error: "No jobs found." },
-            { status: 404 }
+            { status: 202 }
         );
 
     } catch (error: unknown) {
