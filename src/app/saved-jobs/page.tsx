@@ -46,19 +46,19 @@ const SavedJobs = () => {
       {savedJobLoading && <BarLoader width={"100%"} color="#3b82f6" className='mx-auto my-8' />}
       <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {jobs?.length ? (
-        jobs.map((job) => {
-          return (
-            job.job && <JobCard
-              key={job.id}
-              job={job.job}
-              setJobs={setJobs}
-              setSavedJobLoading={setSavedJobLoading}
-            />
-          )
-        })
-      ) : (
-        <div>No Jobs Found 🙄</div>
-      )}
+          jobs.map((job) => {
+            return (
+              job.job && <JobCard
+                key={job.id}
+                job={job.job}
+                setJobs={setJobs}
+                setSavedJobLoading={setSavedJobLoading}
+              />
+            )
+          })
+        ) : (
+          <div>No Jobs Found 🙄</div>
+        )}
       </div>
     </div>
   )
