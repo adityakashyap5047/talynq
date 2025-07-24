@@ -1,5 +1,6 @@
 "use client";
 
+import AddCompany from "@/components/AddCompany";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -169,6 +170,7 @@ const PostJob = () => {
               </Select>
             )}
           />
+          <AddCompany />
         </div>
           {error && <p className="bg-slate-800 px-4 py-2 rounded-sm text-red-500">{error}</p>}
           {errors.location && <p className="text-red-500">{errors.location.message}</p>}

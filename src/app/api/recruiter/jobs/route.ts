@@ -48,7 +48,7 @@ export async function POST(request: NextRequest){
             }
         });
 
-        return NextResponse.json(job);
+        return NextResponse.json(job, { status: 201 });
     } catch (error) {
         return NextResponse.json(
             {
