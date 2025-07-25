@@ -4,14 +4,31 @@
 
 ---
 
-## 🛠 Tech Stack
+## 🛠️ Tech Stack
 
-- **Frontend**: React.js, Tailwind CSS, Redux Toolkit
-- **Backend**: Node.js, Express.js
-- **Database**: MongoDB
-- **Authentication**: JWT, OAuth (Google/GitHub optional)
-- **Email & Notifications**: Nodemailer / Resend API
-- **Hosting**: Vercel (Frontend), Render / Railway (Backend)
+- **Frontend**: React / Next.js / Tailwind CSS 
+- **Backend**: Next.js API Routes / Prisma ORM  
+- **Database**: PostgreSQL 
+- **Authentication**: Clerk  
+- **Form Handling & Validation**: React Hook Form / Zod  
+- **UI Components**: Shadcn / Radix UI / Lucide Icons  
+
+---
+
+## 📸 Screenshots
+
+<div align="center">
+  <img src="public/project/talynq-1.png" alt="Kanvix Screenshot 1" width="220" style="margin: 6px;" />
+  <img src="public/project/talynq-2.png" alt="Kanvix Screenshot 2" width="220" style="margin: 6px;" />
+  <img src="public/project/talynq-3.png" alt="Kanvix Screenshot 3" width="220" style="margin: 6px;" />
+  <img src="public/project/talynq-4.png" alt="Kanvix Screenshot 4" width="220" style="margin: 6px;" />
+  <img src="public/project/talynq-5.png" alt="Kanvix Screenshot 5" width="220" style="margin: 6px;" />
+  <img src="public/project/talynq-6.png" alt="Kanvix Screenshot 6" width="220" style="margin: 6px;" />
+  <img src="public/project/talynq-7.png" alt="Kanvix Screenshot 7" width="220" style="margin: 6px;" />
+  <img src="public/project/talynq-8.png" alt="Kanvix Screenshot 8" width="220" style="margin: 6px;" />
+  <img src="public/project/talynq-code-1.png" alt="Kanvix Screenshot 8" width="220" style="margin: 6px;" />
+  <img src="public/project/talynq-code-2.png" alt="Kanvix Screenshot 8" width="220" style="margin: 6px;" />
+</div>
 
 ---
 
@@ -19,7 +36,7 @@
 
 - 👤 User authentication & role management (Job Seeker / Recruiter)
 - 📄 Create & manage job listings
-- 📝 Apply to jobs with resumes and cover letters
+- 📝 Apply to jobs with resumes
 - 🔍 Smart search & filters
 - 💬 Messaging system between recruiters & applicants
 - 📊 Admin dashboard for analytics and management
@@ -29,46 +46,31 @@
 
 ## ⚙️ Getting Started
 
-### 1. Clone the repo
-
 ```bash
-git clone https://github.com/your-username/talynq.git
+# Clone the repository
+git clone https://github.com/adityakashyap5047/talynq.git
+
+# Navigate to the project directory
 cd talynq
-```
 
-### 2. Install dependencies
-
-```bash
-# For both frontend and backend
+# Install dependencies
 npm install
-```
 
-### 3. Set up environment variables
+# Rename the .env.example file to .env
+mv .env.example .env
 
-Create `.env` file in the `server/` and `client/` directories.
+# Fill in the required environment variables in the .env file
 
-**Example for `server/.env`**
-
-```env
-PORT=5000
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-EMAIL_HOST=smtp.yourprovider.com
-EMAIL_USER=your_email@example.com
-EMAIL_PASS=your_password
-```
-
-### 4. Start development servers
-
-```bash
-# Backend
-cd server
+# Start the development server
 npm run dev
 
-# Frontend
-cd ../client
-npm run dev
 ```
+---
+
+---
+
+## 🌐 Live Demo
+[![Live Demo](https://img.shields.io/badge/Live-Kanvix-blue?style=for-the-badge)](https://talynq.vercel.app)
 
 ---
 
@@ -97,5 +99,5 @@ MIT
 ## ✨ Author
 
 **Aditya Kumar**  
-[LinkedIn](https://linkedin.com/in/your-profile) • [Portfolio](https://your-portfolio.com)
+[LinkedIn](https://linkedin.com/in/adityakashyap5047) • [Portfolio](https://adityakashyap5047.vercel.app)
 
