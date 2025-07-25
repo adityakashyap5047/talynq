@@ -56,7 +56,6 @@ const PostJob = () => {
       setLoading(true);
       setError(null);
       try {
-          await axios.post('/api/add-user');
         const response = await axios.get("/api/companies/recruiter");
         if (response.status === 200) {
           setCompanies(response.data);

@@ -30,7 +30,6 @@ const JobPage = () => {
         setLoading(true);
         setError(null);
         try {
-          await axios.post('/api/add-user');
           const response = await axios.get(`/api/jobs/${id}`);
           setJob(response.data.job);
           userId.current = response.data.userId;

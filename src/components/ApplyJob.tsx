@@ -9,7 +9,7 @@ import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BarLoader } from "react-spinners";
 import { useUser } from "@clerk/nextjs";
 import { Checkbox } from "./ui/checkbox";
@@ -64,7 +64,7 @@ const ApplyJob = ({job, applied = false, setJob}: ApplyJobProps) => {
 
     const { user } = useUser();
 
-    useEffect(() => {
+    const fetchResumeDetails = () => {
         const fetchResume = async () => {
             setLoading(true);
             try {
@@ -78,7 +78,7 @@ const ApplyJob = ({job, applied = false, setJob}: ApplyJobProps) => {
             }
         };
         fetchResume();
-    }, []);
+    }
 
     const onSubmit = (data: ApplyJobFormData) => {
         const applyJob = async () => {
@@ -127,7 +127,7 @@ const ApplyJob = ({job, applied = false, setJob}: ApplyJobProps) => {
   return (
     <Drawer open={applied ? false : undefined}>
         <DrawerTrigger asChild>
-            <Button size={"lg"} className={`${job?.isOpen && !applied && "hover:!bg-red-500/50"}`}  variant={job?.isOpen && applied ? "blue" : "destructive"} disabled={!job?.isOpen || applied}>
+            <Button onClick={fetchResumeDetails} size={"lg"} className={`${job?.isOpen && !applied && "hover:!bg-red-500/50"}`}  variant={job?.isOpen && applied ? "blue" : "destructive"} disabled={!job?.isOpen || applied}>
                 {job?.isOpen ? (applied ? "Applied" : "Apply Now") : "Job Closed"}
             </Button>
         </DrawerTrigger>
@@ -268,7 +268,7 @@ const ApplyJob = ({job, applied = false, setJob}: ApplyJobProps) => {
                         Error: {error}
                     </div>
                 )}
-                {loading && <BarLoader width={"100%"} color='#1d293d' />}
+                {loading && <BarLoader width={"100%"} color='#3b82f6' />}
             </DrawerFooter>
         </DrawerContent>
     </Drawer>

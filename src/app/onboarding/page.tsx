@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { useUser } from '@clerk/nextjs';
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import React, { useLayoutEffect } from 'react';
 import { BarLoader } from "react-spinners";
@@ -15,6 +16,11 @@ const Onboarding = () => {
 
   useLayoutEffect(() => {
     if (!isLoaded || !user) return;
+
+    const addUser = async () => {
+      await axios.post('/api/add-user');
+    }
+    addUser();
 
     if (user?.unsafeMetadata?.role) {
       if (user?.unsafeMetadata.role === "recruiter") {
