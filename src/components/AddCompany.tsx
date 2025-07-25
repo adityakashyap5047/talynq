@@ -11,9 +11,18 @@ import { Company } from "@/types";
 
 const schema = z.object({
     name: z.string().min(1, "Company name is required"),
-    logo: typeof FileList !== "undefined" ? z.instanceof(FileList).refine((file) => file[0] && (file[0].type === 'image/png' || file[0].type === 'image/jpeg' || file[0].type === 'image/jpg'), {
-        message: "Logo must be a PNG, JPEG, or JPG image"
-    }) : z.any()
+    logo: typeof FileList !== "undefined"
+  ? z
+      .instanceof(FileList)
+      .refine(
+        (file) =>
+          file.length > 0 &&
+          ["image/png", "image/jpeg", "image/jpg", "image/webp", "image/svg+xml", "image/gif", "image/avif"].includes(file[0].type),
+        {
+          message: "Logo must be a PNG, JPEG, JPG, WEBP, SVG, GIF, or AVIF image",
+        }
+      )
+  : z.any()
 })
 
 const AddCompany = ({ setCompanies, xlButton = false, setCompanyCode, loadingCreatedJob = false }: { setCompanies: React.Dispatch<React.SetStateAction<Company[]>>; xlButton?: boolean; setCompanyCode: React.Dispatch<React.SetStateAction<string>>; loadingCreatedJob?: boolean }) => {
@@ -96,8 +105,8 @@ const AddCompany = ({ setCompanies, xlButton = false, setCompanyCode, loadingCre
             </DrawerHeader>
             <form className="flex flex-col sm:flex-row justify-center items-center gap-4 p-4 pb-0">
                 <Input placeholder="Company Name" {...register("name")} />
-                <Input type="file" accept="image/png, image/jpeg, image/jpg" {...register("logo")} />
-                <Button type="button" className="max-sm:w-full w-40 text-white bg-red-500 hover:bg-red-600/50" onClick={handleSubmit(onSubmit)}>Add Company</Button>
+                <Input type="file" accept="image/*" {...register("logo")} />
+                <Button type="button" disabled={loading} className="max-sm:w-full w-40 text-white bg-red-500 hover:bg-red-600/50" onClick={handleSubmit(onSubmit)}>Add Company</Button>
             </form>
             {errors.name && <p className="text-red-500 bg-slate-800 py-1 my-1 mx-4 rounded-sm px-4 text-sm">{errors.name.message}</p>}
             {typeof errors.logo?.message === "string" && <p className="text-red-500 my-1 mx-4 bg-slate-800 py-1 rounded-sm px-4 text-sm">{errors.logo.message}</p>}
@@ -105,7 +114,7 @@ const AddCompany = ({ setCompanies, xlButton = false, setCompanyCode, loadingCre
 
             <DrawerFooter>
                 <DrawerClose asChild>
-                    <Button type="button" onClick={() => reset()} className="bg-slate-900 text-white hover:bg-slate-900/50">Cancel</Button>
+                    <Button type="button" disabled={loading} onClick={() => reset()} className="bg-slate-900 text-white hover:bg-slate-900/50">Cancel</Button>
                 </DrawerClose>
                 {loading && <BarLoader color="#3b82f6" width={"100%"} />}
             </DrawerFooter>

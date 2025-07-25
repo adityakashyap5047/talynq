@@ -186,7 +186,7 @@ const PostJob = () => {
           {errors.requirements && <p className="text-red-500">{errors.requirements.message}</p>}
           <Button disabled={loadingCreatedJob} type="submit" variant={"blue"} size={"lg"} className="mt-2">Submit</Button>
           {errorCreatedJob && <p className="bg-slate-800 mt-4 px-4 py-2 rounded-sm text-red-500">{errorCreatedJob}</p>}
-          {loadingCreatedJob && <BarLoader className="mt-4" width={"100%"} color="#36db7" />}
+          {loadingCreatedJob && <BarLoader className="mt-4" width={"100%"} color="#36d7b7" />}
         </form>
       </div>
     </div>
