@@ -40,34 +40,38 @@ export async function POST(request: NextRequest){
         const job_id = formData.get("job_id") as string;
         const status = formData.get("status") as ApplicationStatus || "APPLIED";
 
-        const resumeFile = formData.get("resume") as File;
+        const resumeFile = formData.get("resume") as File | null;
+        let resumeUrl = formData.get("resumeUrl") as string | null;
 
-        if (!resumeFile) {
+        if (!resumeFile && !resumeUrl) {
             return NextResponse.json({ error: "Resume file is missing." }, { status: 400 });
         }
 
-        const buffer = Buffer.from(await resumeFile.arrayBuffer());
-        const fileName = `resume-${Math.floor(Math.random() * 90000)}-${existingUser.id}.pdf`;
+        if (resumeFile && typeof resumeFile === "object") {
+            
+            const buffer = Buffer.from(await resumeFile.arrayBuffer());
+            const fileName = `resume-${Math.floor(Math.random() * 90000)}-${existingUser.id}.pdf`;
 
-        const imagekitForm = new FormData();
-        imagekitForm.append("file", buffer, {
-            filename: fileName,
-            contentType: resumeFile.type,
-        });
-        imagekitForm.append("fileName", fileName);
-        imagekitForm.append("useUniqueFileName", "true");
-        imagekitForm.append("folder", "/Talynq/resumes");
+            const imagekitForm = new FormData();
+            imagekitForm.append("file", buffer, {
+                filename: fileName,
+                contentType: resumeFile.type,
+            });
+            imagekitForm.append("fileName", fileName);
+            imagekitForm.append("useUniqueFileName", "true");
+            imagekitForm.append("folder", "/Talynq/resumes");
 
-        const imagekitResponse = await axios.post("https://upload.imagekit.io/api/v1/files/upload", imagekitForm, {
-            headers: {
-                ...imagekitForm.getHeaders(),
-                Authorization: "Basic " + Buffer.from(process.env.IMAGEKIT_PRIVATE_KEY + ":").toString("base64"),
-            },
-        });
+            const imagekitResponse = await axios.post("https://upload.imagekit.io/api/v1/files/upload", imagekitForm, {
+                headers: {
+                    ...imagekitForm.getHeaders(),
+                    Authorization: "Basic " + Buffer.from(process.env.IMAGEKIT_PRIVATE_KEY + ":").toString("base64"),
+                },
+            });
 
-        const resumeUrl = imagekitResponse.data.url;
-        
-         const application = await db.application.create({
+            resumeUrl = imagekitResponse.data.url;
+        }
+
+        const application = await db.application.create({
             data: {
                 name,
                 email,
@@ -78,7 +82,7 @@ export async function POST(request: NextRequest){
                 job_id,
                 status,
                 candidate_id: existingUser.id,
-                resumeUrl,
+                resumeUrl: resumeUrl ?? "",
             },
         });
 

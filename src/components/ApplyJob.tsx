@@ -9,9 +9,10 @@ import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BarLoader } from "react-spinners";
 import { useUser } from "@clerk/nextjs";
+import { Checkbox } from "./ui/checkbox";
 
 interface ApplyJobProps {
     job: Job | null;
@@ -26,7 +27,7 @@ interface ApplyJobFormData {
     experience: number;
     skills: string;
     education: "Intermediate" | "Graduate" | "Post Graduate";
-    resume: FileList;
+    resume?: FileList | string;
 }
 
 const schema = z.object({
@@ -36,15 +37,25 @@ const schema = z.object({
     experience: z.number().min(0, "Years of Experience must be a positive number").int(),
     skills: z.string().min(1, "Skills are required"),
     education: z.enum(["Intermediate", "Graduate", "Post Graduate"]),
-    resume: typeof FileList !== "undefined" ? z.instanceof(FileList).refine((file) => file[0] && (file[0].type === 'application/pdf' || file[0].type === 'application/msword' || file[0].type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), {
-        message: "Resume must be a PDF or Word document"
-    }) : z.any()
+    resume: z.union([
+    z
+      .instanceof(FileList)
+      .refine(
+        (file) => file.length > 0 && ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(file[0].type),
+        { message: 'Resume must be a PDF, DOC, or DOCX file' }
+      ),
+    z.string().min(1, 'Please select a previously uploaded resume'),
+  ]).optional(),
 });
 
 const ApplyJob = ({job, applied = false, setJob}: ApplyJobProps) => {
 
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [resumeUrl, setResumeUrl] = useState<string | null>(null);
+
+    const [isPrevResume, setIsPrevResume] = useState<boolean>(false);
+
 
     const {register, handleSubmit, control, formState: { errors }, reset} = useForm<ApplyJobFormData>({
         resolver: zodResolver(schema)
@@ -52,7 +63,24 @@ const ApplyJob = ({job, applied = false, setJob}: ApplyJobProps) => {
 
     const { user } = useUser();
 
+    useEffect(() => {
+        const fetchResume = async () => {
+            setLoading(true);
+            try {
+                const res = await axios.get("/api/resume");
+                setResumeUrl(res.data.resumeUrl);
+                setIsPrevResume(!!res.data.resumeUrl);
+            } catch (err) {
+                console.error("Failed to fetch resume:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchResume();
+    }, []);
+
     const onSubmit = (data: ApplyJobFormData) => {
+        console.log("Form Data:", data);
         const applyJob = async () => {
             setLoading(true);
             setError(null);
@@ -65,9 +93,16 @@ const ApplyJob = ({job, applied = false, setJob}: ApplyJobProps) => {
                 formData.append("experience", String(data.experience));
                 formData.append("skills", data.skills);
                 formData.append("education", data.education);
-                formData.append("resume", data.resume[0]);
                 formData.append("job_id", job?.id ?? "");
                 formData.append("status", "APPLIED");
+                
+                if (isPrevResume && resumeUrl) {
+                    formData.append("resumeUrl", resumeUrl);
+                } else {
+                    if (data.resume && (data.resume as FileList)[0]) {
+                        formData.append("resume", (data.resume as FileList)[0]);
+                    }
+                }
 
                 await axios.post("/api/application", formData, {
                     headers: {
@@ -104,7 +139,7 @@ const ApplyJob = ({job, applied = false, setJob}: ApplyJobProps) => {
                 <DrawerDescription></DrawerDescription>
             </DrawerHeader>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4 pb-0">
+            <form onSubmit={handleSubmit(onSubmit, (errors) => console.log("Validation errors:", errors))} className="flex flex-col gap-4 p-4 pb-0">
                 <div className="bg-slate-900 rounded-sm">
                     <Input
                         type="text"
@@ -187,17 +222,39 @@ const ApplyJob = ({job, applied = false, setJob}: ApplyJobProps) => {
                 {errors?.education && (
                     <p className="text-red-500">{errors.education.message}</p>
                 )}
-                <div className="bg-slate-900 rounded-sm">
+                <div className="bg-slate-900 flex justify-center items-center gap-4 pl-4 rounded-sm">
+                    <label htmlFor="resume" className="cursor-pointer">Resume</label>
                     <Input
                         type="file"
+                        id="resume"
                         accept=".pdf, .doc, .docx"
                         className="flex-1 file:text-gray-500 file:pr-4"
                         {...register("resume")}
                     />
-                    {errors?.resume && (
-                        <p className="text-red-500">{errors.resume.message}</p>
-                    )}
                 </div>
+                {resumeUrl && (
+                    <div className="flex items-center space-x-2">
+                        <Checkbox
+                            id="resumeUrl"
+                            checked={isPrevResume}
+                            onCheckedChange={(checked) => setIsPrevResume(!!checked)}
+                        />
+                        <label htmlFor="resumeUrl" className="text-sm text-gray-300">
+                            Use previously uploaded{" "}
+                            <a
+                            href={resumeUrl!}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline"
+                            >
+                            resume
+                            </a>
+                        </label>
+                    </div>
+                )}
+                {!isPrevResume && errors?.resume && (
+                    <p className="text-red-500">{errors.resume.message}</p>
+                )}
                 <Button disabled={loading} type="submit" variant={"blue"} size={"lg"}>
                     Apply
                 </Button>
