@@ -27,7 +27,7 @@ interface ApplyJobFormData {
     experience: number;
     skills: string;
     education: "Intermediate" | "Graduate" | "Post Graduate";
-    resume?: FileList | string;
+    resume?: FileList | string | null;
 }
 
 const schema = z.object({
@@ -41,10 +41,11 @@ const schema = z.object({
     z
       .instanceof(FileList)
       .refine(
-        (file) => file.length > 0 && ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(file[0].type),
+        (file) => file.length > 0 ? ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(file[0].type) : true,
         { message: 'Resume must be a PDF, DOC, or DOCX file' }
       ),
     z.string().min(1, 'Please select a previously uploaded resume'),
+    z.null(),
   ]).optional(),
 });
 
@@ -80,7 +81,6 @@ const ApplyJob = ({job, applied = false, setJob}: ApplyJobProps) => {
     }, []);
 
     const onSubmit = (data: ApplyJobFormData) => {
-        console.log("Form Data:", data);
         const applyJob = async () => {
             setLoading(true);
             setError(null);
@@ -139,7 +139,7 @@ const ApplyJob = ({job, applied = false, setJob}: ApplyJobProps) => {
                 <DrawerDescription></DrawerDescription>
             </DrawerHeader>
 
-            <form onSubmit={handleSubmit(onSubmit, (errors) => console.log("Validation errors:", errors))} className="flex flex-col gap-4 p-4 pb-0">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4 pb-0">
                 <div className="bg-slate-900 rounded-sm">
                     <Input
                         type="text"

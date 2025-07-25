@@ -29,10 +29,10 @@ export async function POST() {
 
         const newUser = await db?.user.create({
             data: {
-                clerkUserId: user?.id || "",
+                clerkUserId: user.id,
                 name,
-                imageUrl: user?.imageUrl,
-                email: user?.emailAddresses[0]?.emailAddress || "",
+                imageUrl: user.imageUrl,
+                email: user.emailAddresses[0]?.emailAddress || "",
             }
         });
 

@@ -30,6 +30,7 @@ const JobPage = () => {
         setLoading(true);
         setError(null);
         try {
+          await axios.post('/api/add-user');
           const response = await axios.get(`/api/jobs/${id}`);
           setJob(response.data.job);
           userId.current = response.data.userId;
@@ -41,7 +42,7 @@ const JobPage = () => {
         }
       };
       fetchJob();
-    }, [id]);
+    }, [id, user?.id]);
 
     const handleStatusChange = (value: "open" | "closed") => {
       setIsLoadingJobStatus(true);
